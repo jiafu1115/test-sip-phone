@@ -4,7 +4,7 @@ import javax.sip.ListeningPoint;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 
-import com.googlecode.test.sip.phone.sip.SipConstants;
+import com.googlecode.test.phone.sip.SipConstants;
 
 public class TestSipStack {
 	

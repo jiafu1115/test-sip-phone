@@ -3,8 +3,8 @@ package com.googlecode.test.sip.phone.test;
 import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
-import com.googlecode.test.sip.phone.sip.phone.AbstractSipPhone;
-import com.googlecode.test.sip.phone.sip.phone.AnonymousSipPhone;
+import com.googlecode.test.phone.AbstractSipPhone;
+import com.googlecode.test.phone.AnonymousSipPhone;
 
 public class TestSipPhone {
 
