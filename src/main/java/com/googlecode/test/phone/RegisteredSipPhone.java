@@ -68,11 +68,7 @@ public class RegisteredSipPhone extends AbstractSipPhone {
   		register(); 
  	}
 	
-	public void test(){
-		System.err.println("fujian");
-		
-	}
-
+	 
 	public PhoneExtension getPhoneExtension() {
 		return phoneExtension;
 	}
