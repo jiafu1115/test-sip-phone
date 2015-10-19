@@ -11,8 +11,6 @@ import javax.sip.SipException;
 import javax.sip.SipProvider;
 import javax.sip.TransactionAlreadyExistsException;
 import javax.sip.TransactionUnavailableException;
-import javax.sip.address.Address;
-import javax.sip.address.SipURI;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.ContactHeader;
 import javax.sip.header.ContentTypeHeader;
@@ -25,14 +23,9 @@ import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
- 
-
-
-
 import org.apache.log4j.Logger;
 
 import com.googlecode.test.phone.AbstractSipPhone;
-import com.googlecode.test.phone.AnonymousSipPhone;
 import com.googlecode.test.phone.sip.SipConstants;
 
  
