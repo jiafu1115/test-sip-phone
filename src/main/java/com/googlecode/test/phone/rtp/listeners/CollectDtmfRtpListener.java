@@ -33,5 +33,10 @@ public class CollectDtmfRtpListener implements RtpListener {
 	public void close() {
 
 	}
+	
+	@Override
+	public String toString(){
+		return this.getClass().getSimpleName();
+	}
 
 }

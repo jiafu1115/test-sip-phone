@@ -68,7 +68,10 @@ public class PlayRtpListener implements RtpListener {
  		sourceDataLine.drain();
 		sourceDataLine.stop();
 		sourceDataLine.close();
+ 	}
 
+	@Override
+	public String toString(){
+		return this.getClass().getSimpleName();
 	}
-
 }
