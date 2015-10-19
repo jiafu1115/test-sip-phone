@@ -1,4 +1,4 @@
-package com.googlecode.test.sip.phone.util;
+package com.googlecode.test.sip.phone.sip.util;
 
 import java.io.IOException;
 import java.net.DatagramSocket;

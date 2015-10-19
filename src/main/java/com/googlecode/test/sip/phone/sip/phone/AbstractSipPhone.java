@@ -34,8 +34,8 @@ import com.googlecode.test.sip.phone.sip.SipConstants;
 import com.googlecode.test.sip.phone.sip.SipListenerImpl;
 import com.googlecode.test.sip.phone.sip.SipStackFactory;
 import com.googlecode.test.sip.phone.sip.sdp.AudioSdpUtil;
-import com.googlecode.test.sip.phone.util.NetUtil;
-import com.googlecode.test.sip.phone.util.PortUtil;
+import com.googlecode.test.sip.phone.sip.util.NetUtil;
+import com.googlecode.test.sip.phone.sip.util.PortUtil;
 
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.message.SIPRequest;
