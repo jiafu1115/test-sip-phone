@@ -40,7 +40,7 @@ import com.googlecode.test.phone.sip.util.PortUtil;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.message.SIPRequest;
 
-public abstract class AbstractSipPhone {
+public abstract class AbstractSipPhone implements SipPhone {
 	
 	private static final Logger LOG=Logger.getLogger(AbstractSipPhone.class);
    
@@ -80,6 +80,10 @@ public abstract class AbstractSipPhone {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#setSupportRefer(boolean)
+	 */
+	@Override
 	public void setSupportRefer(boolean isSupportRefer) {
 		this.isSupportRefer = isSupportRefer;
 	}
@@ -102,6 +106,10 @@ public abstract class AbstractSipPhone {
 		return isEarlyOffer;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#setEarlyOffer(boolean)
+	 */
+	@Override
 	public void setEarlyOffer(boolean isEarlyOffer) {
 		this.isEarlyOffer = isEarlyOffer;
 	}
@@ -132,10 +140,18 @@ public abstract class AbstractSipPhone {
 		this.sipListenerImpl = sipListenerImpl;
 	}
  	
+	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#getReceivedMessages()
+	 */
+	@Override
 	public ReceivedMessages getReceivedMessages() {
 		return sipListenerImpl.getReceivedMessages();
 	}
  
+	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#enablePlayListened()
+	 */
+	@Override
 	public void enablePlayListened() {
 		this.isPlayListened = true;
 	}
@@ -162,17 +178,29 @@ public abstract class AbstractSipPhone {
 		return sipStack;
 	}
  
+	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#sendDtmf(java.lang.String)
+	 */
+	@Override
 	public void sendDtmf(String dtmfs){
 		sendDtmf(dtmfs,0);
  	}
  	
- 	public void sendDtmf(String digits, int sleepTimeByMilliSecond){
+ 	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#sendDtmf(java.lang.String, int)
+	 */
+ 	@Override
+	public void sendDtmf(String digits, int sleepTimeByMilliSecond){
 		if(rtpSession==null)
 			throw new RuntimeException("sip negotition not setup");
 		rtpSession.sendDtmf(digits,sleepTimeByMilliSecond);
  	}
  	
   
+	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#invite(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public void invite(String requestUrl,String callId) {
 		try{
 	 		Request request = createInviteRequestWithSipHeader(requestUrl, callId);
@@ -195,7 +223,11 @@ public abstract class AbstractSipPhone {
 
  	}
   	
- 	public void bye() {
+ 	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#bye()
+	 */
+ 	@Override
+	public void bye() {
   		try {
   			if(dialog==null){
   			    this.stop();
@@ -245,6 +277,10 @@ public abstract class AbstractSipPhone {
 		return request;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.googlecode.test.phone.SipPhone#stop()
+	 */
+	@Override
 	public void stop(){
  		LOG.info("sip stack stop for:"+this);
  		

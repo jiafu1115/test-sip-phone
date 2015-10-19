@@ -1,17 +1,21 @@
 package com.googlecode.test.sip.phone.test;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
-import com.googlecode.test.phone.AbstractSipPhone;
 import com.googlecode.test.phone.AnonymousSipPhone;
+import com.googlecode.test.phone.SipPhone;
 
 public class TestSipPhone {
 
 	 	public static void main(String[] args) throws InterruptedException, ParseException {
+	 		
+	 		
+	 		new File("C:/Users/jiafu/git/test-sip-phone");
 			
  	
-	 	AbstractSipPhone sipPhone = new AnonymousSipPhone();
+	 	SipPhone sipPhone = new AnonymousSipPhone();
 	 	
 	 	sipPhone.enablePlayListened();
 	 	
