@@ -9,6 +9,8 @@ import javax.sip.RequestEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.SipException;
 import javax.sip.SipProvider;
+import javax.sip.TransactionAlreadyExistsException;
+import javax.sip.TransactionUnavailableException;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.header.CSeqHeader;
@@ -31,9 +33,12 @@ import org.apache.log4j.Logger;
 
 import com.googlecode.test.sip.phone.sip.SipConstants;
 import com.googlecode.test.sip.phone.sip.phone.AbstractSipPhone;
+import com.googlecode.test.sip.phone.sip.phone.AnonymousSipPhone;
 
  
 /**
+ * 
+ * 
  * 
   Agent A                  Agent B
       |                        |
@@ -64,6 +69,7 @@ Attended transfer，即supervised transfer，Transferor与Transferee及Transfer 
 成功的呼转并不改变Transferor与Transferee间的媒体流，并不影响原有的session;任一方都可以在REFER后通过发送BYE消息来结束原有的session;
 
  * http://tools.ietf.org/html/rfc3515
+ * https://tools.ietf.org/html/rfc5589
  * @author jiafu
  *
  */
@@ -80,8 +86,18 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 
 	@Override
 	public void handle(RequestEvent requestEvent) throws Exception {
+ 		boolean supportRefer = this.sipPhone.isSupportRefer();
+		if(supportRefer){
+	        refer(requestEvent);
+ 		}else{
+ 			this.sipPhone.stopRtpSession();
+ 		}
  		 
-        SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+    }
+
+	private void refer(RequestEvent requestEvent) throws ParseException, SipException,
+			TransactionAlreadyExistsException, TransactionUnavailableException, InvalidArgumentException {
+		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
         Request refer = requestEvent.getRequest();
 
             LOG.info("referee: got an REFER sending Accepted");
@@ -155,10 +171,13 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             eventHeader.setEventId( Long.toString(id) );
 
             sendNotify( Response.TRYING, "Trying" );
-
+            
+            
+                                  
+  
             // Then call the refer-to
            // sendInvite( refTo );
-        }
+	}
 
         private void sendNotify( int code, String reason )
             throws SipException, ParseException

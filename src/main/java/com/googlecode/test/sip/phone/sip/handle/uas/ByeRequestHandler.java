@@ -35,11 +35,11 @@ public class ByeRequestHandler extends AbstractRequestHandler {
 					serverTransaction.sendResponse(response);
 	  		}
  			
- 			if(alsoHeader!=null){
- 				CallIdHeader callIdHeader=(CallIdHeader)request.getHeader(CallIdHeader.NAME);
- 				this.sipPhone.stopRtpSession();
-				this.sipPhone.invite(alsoHeader.toString(), callIdHeader.getCallId()+"_also");
-				 				
+ 			if(alsoHeader!=null&&this.sipPhone.isSupportRefer()){
+  	 				CallIdHeader callIdHeader=(CallIdHeader)request.getHeader(CallIdHeader.NAME);
+ 	 				this.sipPhone.stopRtpSession();
+ 					this.sipPhone.invite(alsoHeader.toString(), callIdHeader.getCallId()+"_also");
+ 				 				
  			}else{
   				sipPhone.stopRtpSession();
  			}

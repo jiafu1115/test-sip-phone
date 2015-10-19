@@ -5,6 +5,7 @@ import gov.nist.javax.sip.message.SIPRequest;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,11 +28,17 @@ import javax.sip.header.FromHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.googlecode.test.sip.phone.media.RtpSession;
 import com.googlecode.test.sip.phone.media.codec.AudioCodec;
+import com.googlecode.test.sip.phone.sip.ReceivedMessages;
 import com.googlecode.test.sip.phone.sip.SipConstants;
 import com.googlecode.test.sip.phone.sip.SipListenerImpl;
 import com.googlecode.test.sip.phone.sip.SipStackFactory;
@@ -50,7 +57,7 @@ public abstract class AbstractSipPhone {
 	protected Set<AudioCodec> supportAudioCodec=new HashSet<AudioCodec>();
 	protected boolean isEarlyOffer;
 	protected boolean isPlayListened;
-	
+	protected boolean isSupportRefer;
 	
 	protected Dialog dialog;
  	
@@ -58,7 +65,8 @@ public abstract class AbstractSipPhone {
 	protected SipProvider sipProvider;   	
 	protected RtpSession rtpSession;
 	
-  	
+	protected SipListenerImpl sipListenerImpl;
+   	
   	{
    		localIp=NetUtil.getLocalIp();
   	 	localSipPort=PortUtil.allocateLocalPort();
@@ -71,9 +79,19 @@ public abstract class AbstractSipPhone {
 		supportAudioCodec.add(AudioCodec.TELEPHONE_EVENT);
     
   	}
-  	
+  	 
    	
-  	protected SipURI getLocalSipUrl(String user) {
+  	public boolean isSupportRefer() {
+		return isSupportRefer;
+	}
+
+
+	public void setSupportRefer(boolean isSupportRefer) {
+		this.isSupportRefer = isSupportRefer;
+	}
+
+
+	protected SipURI getLocalSipUrl(String user) {
 		SipURI createSipURI=null;
 		try {
 			createSipURI= SipConstants.Factorys.ADDRESS_FACTORY.createSipURI(user, localIp);
@@ -101,16 +119,29 @@ public abstract class AbstractSipPhone {
 		try {
 			ListeningPoint sipListeningPoint = sipStack.createListeningPoint(localIp, localSipPort, ListeningPoint.UDP);
 			sipProvider = sipStack.createSipProvider(sipListeningPoint);
-			sipProvider.addSipListener(new SipListenerImpl(this));
+			sipListenerImpl = new SipListenerImpl(this);
+			sipProvider.addSipListener(sipListenerImpl);
  		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 		
  		LOG.info("[sipstack]sip stack start for :"+this);
  	}
-	
- 
+	 
 
+	public SipListenerImpl getSipListenerImpl() {
+		return sipListenerImpl;
+	}
+
+
+	public void setSipListenerImpl(SipListenerImpl sipListenerImpl) {
+		this.sipListenerImpl = sipListenerImpl;
+	}
+ 	
+	public ReceivedMessages getReceivedMessages() {
+		return sipListenerImpl.getReceivedMessages();
+	}
+ 
 	public void enablePlayListened() {
 		this.isPlayListened = true;
 	}
