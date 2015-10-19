@@ -33,7 +33,7 @@ import com.googlecode.test.phone.sip.ReceivedMessages;
 import com.googlecode.test.phone.sip.SipConstants;
 import com.googlecode.test.phone.sip.SipListenerImpl;
 import com.googlecode.test.phone.sip.SipStackFactory;
-import com.googlecode.test.phone.sip.sdp.AudioSdpUtil;
+import com.googlecode.test.phone.sip.sdp.SdpUtil;
 import com.googlecode.test.phone.sip.util.NetUtil;
 import com.googlecode.test.phone.sip.util.PortUtil;
 
@@ -206,7 +206,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 	 		Request request = createInviteRequestWithSipHeader(requestUrl, callId);
   	 		 
 	 		if(isEarlyOffer){
-	 	 		SessionDescription sessionDescription = AudioSdpUtil.createSessionDescription(localIp, localRtpPort, supportAudioCodec);
+	 	 		SessionDescription sessionDescription = SdpUtil.createSessionDescription(localIp, localRtpPort, supportAudioCodec);
 		     	request.setContent(sessionDescription, SipConstants.Factorys.HEADER_FACTORY.createContentTypeHeader("application", "sdp"));
  	 		}
 	 		

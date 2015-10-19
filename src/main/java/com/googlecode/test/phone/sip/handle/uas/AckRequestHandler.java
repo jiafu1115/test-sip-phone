@@ -3,8 +3,8 @@ package com.googlecode.test.phone.sip.handle.uas;
 import javax.sip.RequestEvent;
 
 import com.googlecode.test.phone.AbstractSipPhone;
-import com.googlecode.test.phone.sip.sdp.AudioSdpMedia;
-import com.googlecode.test.phone.sip.sdp.AudioSdpUtil;
+import com.googlecode.test.phone.sip.sdp.SdpInfo;
+import com.googlecode.test.phone.sip.sdp.SdpUtil;
 
 public class AckRequestHandler extends AbstractRequestHandler {
 
@@ -17,7 +17,7 @@ public class AckRequestHandler extends AbstractRequestHandler {
 		try {
 			byte[] sdpContent = ((byte[])(requestEvent.getRequest().getContent()));
 			if (sdpContent != null) {
-				AudioSdpMedia sdpMedia = AudioSdpUtil.parseAudioCodecFromSdpContent(sdpContent);
+				SdpInfo sdpMedia = SdpUtil.parseAudioCodecFromSdpContent(sdpContent);
 				this.sipPhone.setRtpSession(sipPhone.getLocalIp(), sipPhone.getLocalRtpPort(), sdpMedia.getIp(),
 						sdpMedia.getPort(), sdpMedia.getCodec());
 				this.sipPhone.getRtpSession().start();

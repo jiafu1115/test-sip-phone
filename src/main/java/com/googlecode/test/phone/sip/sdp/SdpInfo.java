@@ -5,20 +5,20 @@ import java.util.Set;
 
 import com.googlecode.test.phone.rtp.codec.AudioCodec;
 
-public class AudioSdpMedia {
+public class SdpInfo {
 	
 	private String ip;
 	private int port;
 	private Set<AudioCodec> codec=new HashSet<AudioCodec>();	
 	
-	public AudioSdpMedia(String ip, int port, Set<AudioCodec> codec) {
+	public SdpInfo(String ip, int port, Set<AudioCodec> codec) {
 		super();
 		this.ip = ip;
 		this.port = port;
 		this.codec = codec;
 	}
  	
-	public AudioSdpMedia() {
+	public SdpInfo() {
  
 	}
 	
@@ -48,7 +48,7 @@ public class AudioSdpMedia {
 
 	@Override
 	public String toString() {
-		return "AudioSdpMedia [ip=" + ip + ", port=" + port + ", codec=" + codec + "]";
+		return "SdpInfo [ip=" + ip + ", port=" + port + ", codec=" + codec + "]";
 	}
 	
 }

@@ -23,8 +23,8 @@ import org.apache.log4j.Logger;
 import com.googlecode.test.phone.AbstractSipPhone;
 import com.googlecode.test.phone.rtp.codec.AudioCodec;
 import com.googlecode.test.phone.sip.SipConstants;
-import com.googlecode.test.phone.sip.sdp.AudioSdpMedia;
-import com.googlecode.test.phone.sip.sdp.AudioSdpUtil;
+import com.googlecode.test.phone.sip.sdp.SdpInfo;
+import com.googlecode.test.phone.sip.sdp.SdpUtil;
 
 public class InviteResponseHandler extends AbstractResponseHandler {
 
@@ -81,14 +81,14 @@ public class InviteResponseHandler extends AbstractResponseHandler {
 			if (arg0.getResponse().getStatusCode() == SIPResponse.OK) {
 				Request request = dialog.createAck(1);
  
-				AudioSdpMedia sdpMedia = AudioSdpUtil.parseAudioCodecFromSdpContent((byte[]) response.getContent());
+				SdpInfo sdpMedia = SdpUtil.parseAudioCodecFromSdpContent((byte[]) response.getContent());
 				Set<AudioCodec> remoteSupportedAudioCodecs = sdpMedia.getCodec();
 
 				Set<AudioCodec> negotiationCodec = remoteSupportedAudioCodecs;
 				if (!this.sipPhone.isEarlyOffer()) {
-					negotiationCodec = AudioSdpUtil.negotiationCodec(remoteSupportedAudioCodecs,
+					negotiationCodec = SdpUtil.negotiationCodec(remoteSupportedAudioCodecs,
 							this.sipPhone.getSupportAudioCodec());
-					SessionDescription sessionDescription = AudioSdpUtil.createSessionDescription(sipPhone.getLocalIp(),
+					SessionDescription sessionDescription = SdpUtil.createSessionDescription(sipPhone.getLocalIp(),
 							sipPhone.getLocalRtpPort(), negotiationCodec);
 					request.setContent(sessionDescription,
 							SipConstants.Factorys.HEADER_FACTORY.createContentTypeHeader("application", "sdp"));

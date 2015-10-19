@@ -22,7 +22,7 @@ import com.googlecode.test.phone.sip.SipConstants;
 
 import gov.nist.javax.sdp.fields.AttributeField;
 
-public class AudioSdpUtil {
+public class SdpUtil {
 
 	private static final String AUDIO = "audio";
 
@@ -47,9 +47,9 @@ public class AudioSdpUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static AudioSdpMedia parseAudioCodecFromSdpContent(byte[] sdpBytes) {
+	public static SdpInfo parseAudioCodecFromSdpContent(byte[] sdpBytes) {
 		String sdpStr = new String(sdpBytes);
- 		AudioSdpMedia sdpMedia = new AudioSdpMedia(); 
+ 		SdpInfo sdpMedia = new SdpInfo(); 
 
 		try {
 			SessionDescription createSessionDescription = SipConstants.Factorys.SDP_FACTORY
