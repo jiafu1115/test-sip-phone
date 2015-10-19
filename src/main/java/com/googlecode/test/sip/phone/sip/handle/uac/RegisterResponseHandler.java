@@ -1,15 +1,12 @@
 package com.googlecode.test.sip.phone.sip.handle.uac;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sip.ClientTransaction;
-import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
 import javax.sip.ResponseEvent;
-import javax.sip.SipException;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.header.AuthorizationHeader;
@@ -113,13 +110,9 @@ public class RegisterResponseHandler extends AbstractResponseHandler {
 			LOG.info(request);
 
 			newClientTransaction.sendRequest();
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (InvalidArgumentException e) {
- 			e.printStackTrace();
-		} catch (SipException e) {
- 			e.printStackTrace();
-		}
+		}  
 	}
 
 }
