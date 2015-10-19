@@ -26,14 +26,9 @@ public class ByeRequestHandler extends AbstractRequestHandler {
 	public void handle(RequestEvent requestEvent) {
  		Request request = requestEvent.getRequest();
  		try {
-			//ServerTransaction newServerTransaction = this.sipPhone.getSipProvider().getNewServerTransaction(requestEvent.getRequest());
- 	 
-			ServerTransaction serverTransaction = requestEvent.getServerTransaction();
- 	 
- 			Header alsoHeader = request.getHeader("Also");
- 			
- 			
- 			
+ 			ServerTransaction serverTransaction = requestEvent.getServerTransaction();
+  			Header alsoHeader = request.getHeader("Also");
+  			
  			if (serverTransaction != null) {
 					Response response = MESSAGE_FACTORY.createResponse(Response.OK, request);
 					LOG.info(response);
@@ -48,9 +43,7 @@ public class ByeRequestHandler extends AbstractRequestHandler {
  			}else{
   				sipPhone.stopRtpSession();
  			}
-
-		
-
+ 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
