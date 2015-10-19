@@ -1,11 +1,7 @@
 package com.googlecode.test.sip.phone.sip.phone;
 
-import gov.nist.javax.sip.Utils;
-import gov.nist.javax.sip.message.SIPRequest;
-
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,14 +24,9 @@ import javax.sip.header.FromHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
-import javax.sip.message.Response;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.googlecode.test.sip.phone.media.RtpSession;
 import com.googlecode.test.sip.phone.media.codec.AudioCodec;
 import com.googlecode.test.sip.phone.sip.ReceivedMessages;
@@ -45,6 +36,9 @@ import com.googlecode.test.sip.phone.sip.SipStackFactory;
 import com.googlecode.test.sip.phone.sip.sdp.AudioSdpUtil;
 import com.googlecode.test.sip.phone.util.NetUtil;
 import com.googlecode.test.sip.phone.util.PortUtil;
+
+import gov.nist.javax.sip.Utils;
+import gov.nist.javax.sip.message.SIPRequest;
 
 public abstract class AbstractSipPhone {
 	
