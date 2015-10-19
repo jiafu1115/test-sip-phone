@@ -80,9 +80,8 @@ public class InviteResponseHandler extends AbstractResponseHandler {
  
 			if (arg0.getResponse().getStatusCode() == SIPResponse.OK) {
 				Request request = dialog.createAck(1);
-				// LOG.info(response);
-
-				AudioSdpMedia sdpMedia = AudioSdpUtil.parseAudioCodecFromSdpStr((byte[]) response.getContent());
+ 
+				AudioSdpMedia sdpMedia = AudioSdpUtil.parseAudioCodecFromSdpContent((byte[]) response.getContent());
 				Set<AudioCodec> remoteSupportedAudioCodecs = sdpMedia.getCodec();
 
 				Set<AudioCodec> negotiationCodec = remoteSupportedAudioCodecs;

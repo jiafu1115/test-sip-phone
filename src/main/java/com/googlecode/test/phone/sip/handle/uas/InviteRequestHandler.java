@@ -49,7 +49,7 @@ public class InviteRequestHandler extends AbstractRequestHandler {
 				
 				if(isEearlyOffer)
 				{
-					audioSdpMedia = AudioSdpUtil.parseAudioCodecFromSdpStr((byte[])content);
+					audioSdpMedia = AudioSdpUtil.parseAudioCodecFromSdpContent((byte[])content);
 					negotiationCodec = AudioSdpUtil.negotiationCodec(audioSdpMedia.getCodec(), this.sipPhone.getSupportAudioCodec());
 					
 				}

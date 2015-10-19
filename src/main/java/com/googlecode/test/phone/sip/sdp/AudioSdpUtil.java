@@ -47,7 +47,7 @@ public class AudioSdpUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static AudioSdpMedia parseAudioCodecFromSdpStr(byte[] sdpBytes) {
+	public static AudioSdpMedia parseAudioCodecFromSdpContent(byte[] sdpBytes) {
 		String sdpStr = new String(sdpBytes);
  		AudioSdpMedia sdpMedia = new AudioSdpMedia(); 
 
