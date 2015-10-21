@@ -1,12 +1,9 @@
 package com.googlecode.test.phone.sip.handle.uas.incomingcall;
 
-import static com.googlecode.test.phone.sip.SipConstants.Factorys.ADDRESS_FACTORY;
-import static com.googlecode.test.phone.sip.SipConstants.Factorys.HEADER_FACTORY;
 import static com.googlecode.test.phone.sip.SipConstants.Factorys.MESSAGE_FACTORY;
 
 import javax.sip.RequestEvent;
 import javax.sip.ServerTransaction;
-import javax.sip.header.ContactHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
