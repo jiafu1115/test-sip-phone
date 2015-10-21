@@ -14,13 +14,13 @@ import org.apache.log4j.Logger;
 
 import com.googlecode.test.phone.AbstractSipPhone;
 
-public class BusyReceivedCallStrategy extends ReceivedCallStrategy {
+public class BusyForReceivedCallStrategy extends ReceivedCallStrategy {
 	
 	
-	private static final Logger LOGGER=Logger.getLogger(BusyReceivedCallStrategy.class);
+	private static final Logger LOGGER=Logger.getLogger(BusyForReceivedCallStrategy.class);
 
 	
-	public BusyReceivedCallStrategy(AbstractSipPhone abstractSipPhone) {
+	public BusyForReceivedCallStrategy(AbstractSipPhone abstractSipPhone) {
 		super(abstractSipPhone);
  	}
  

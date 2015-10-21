@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import com.googlecode.test.phone.AbstractSipPhone;
 import com.googlecode.test.phone.AbstractSipPhone.ReceivedCallHandleType;
 import com.googlecode.test.phone.sip.handle.uas.incomingcall.AcceptReceivedCallStrategy;
-import com.googlecode.test.phone.sip.handle.uas.incomingcall.BusyReceivedCallStrategy;
+import com.googlecode.test.phone.sip.handle.uas.incomingcall.BusyForReceivedCallStrategy;
 import com.googlecode.test.phone.sip.handle.uas.incomingcall.IgnoreReceivedCallStrategy;
 import com.googlecode.test.phone.sip.handle.uas.incomingcall.ReceivedCallStrategy;
 
@@ -29,7 +29,7 @@ public class InviteRequestHandler extends AbstractRequestHandler {
 			receivedCallStrategy=new IgnoreReceivedCallStrategy(sipPhone);
  			break;
  		case BUSY:
-			receivedCallStrategy=new BusyReceivedCallStrategy(sipPhone);
+			receivedCallStrategy=new BusyForReceivedCallStrategy(sipPhone);
  			break;
  		case ACCEPT:
 		default:
