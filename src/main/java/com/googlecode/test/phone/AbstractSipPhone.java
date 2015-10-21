@@ -42,6 +42,10 @@ import gov.nist.javax.sip.message.SIPRequest;
 
 public abstract class AbstractSipPhone implements SipPhone {
 	
+ 	public static enum ReceivedCallHandleType{
+ 		IGNORE,BUSY,ACCEPT;
+ 	}
+	
 	private static final Logger LOG=Logger.getLogger(AbstractSipPhone.class);
    
 	protected String localIp;
@@ -59,6 +63,8 @@ public abstract class AbstractSipPhone implements SipPhone {
 	protected SipProvider sipProvider;   	
 	protected RtpSession rtpSession;
 	
+	protected ReceivedCallHandleType receivedCallHandleType;
+	
 	protected SipListenerImpl sipListenerImpl;
    	
   	{
@@ -71,8 +77,9 @@ public abstract class AbstractSipPhone implements SipPhone {
 		supportAudioCodec.add(AudioCodec.PCMA);
 		supportAudioCodec.add(AudioCodec.PCMU);
 		supportAudioCodec.add(AudioCodec.TELEPHONE_EVENT);
-    
-  	}
+		
+		receivedCallHandleType=ReceivedCallHandleType.ACCEPT;
+   	}
   	 
    	
   	public boolean isSupportRefer() {
@@ -129,7 +136,17 @@ public abstract class AbstractSipPhone implements SipPhone {
 		
  		LOG.info("[sipstack]sip stack start for :"+this);
  	}
-	 
+	  
+
+	public ReceivedCallHandleType getReceivedCallHandleType() {
+		return receivedCallHandleType;
+	}
+
+
+	public void setReceivedCallHandleType(ReceivedCallHandleType receivedCallHandleType) {
+		this.receivedCallHandleType = receivedCallHandleType;
+	}
+
 
 	public SipListenerImpl getSipListenerImpl() {
 		return sipListenerImpl;

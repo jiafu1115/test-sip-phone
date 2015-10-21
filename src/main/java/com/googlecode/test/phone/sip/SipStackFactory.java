@@ -12,7 +12,7 @@ public class SipStackFactory {
 	private static SipStackFactory INSTANCE=new SipStackFactory();
 	
 	public static SipStackFactory getInstance(){
-		return INSTANCE;
+ 		return INSTANCE;
 	}
 	
 	

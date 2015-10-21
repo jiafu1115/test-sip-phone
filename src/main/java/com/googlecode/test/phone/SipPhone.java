@@ -1,5 +1,6 @@
 package com.googlecode.test.phone;
 
+import com.googlecode.test.phone.AbstractSipPhone.ReceivedCallHandleType;
 import com.googlecode.test.phone.sip.ReceivedMessages;
 
 public interface SipPhone {
@@ -21,5 +22,9 @@ public interface SipPhone {
 	void bye();
 
 	void stop();
+	
+ 	ReceivedCallHandleType getReceivedCallHandleType();
+
+	void setReceivedCallHandleType(ReceivedCallHandleType receivedCallHandleType);
 
 }
