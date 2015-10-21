@@ -37,10 +37,7 @@ public class BusyForReceivedCallStrategy extends ReceivedCallStrategy {
 
 			if (newServerTransaction != null) {
  				Response response = MESSAGE_FACTORY.createResponse(Response.BUSY_HERE, request);
- 				ContactHeader createContactHeader = HEADER_FACTORY
-						.createContactHeader(ADDRESS_FACTORY.createAddress(this.abstractSipPhone.getLocalSipUri()));
-				response.addHeader(createContactHeader);
-
+ 				 
 				LOGGER.info(response);
 				newServerTransaction.sendResponse(response);
 
