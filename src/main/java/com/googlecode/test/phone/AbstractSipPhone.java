@@ -178,17 +178,14 @@ public abstract class AbstractSipPhone implements SipPhone {
 	public RtpSession getRtpSession() {
 		return rtpSession;
 	}
- 
-	public void setRtpSession(RtpSession rtpSession) {
-		this.rtpSession = rtpSession;
- 		if(isPlayListened)
- 			this.rtpSession.enablePlay();
-	}
-	
+  
 	public void setRtpSession(String dialog,String localIp,int localRtpPort,String remoteIp, int remoteRtpPort, Set<AudioCodec> audioCodecs){
 		RtpSession rtpSession = new RtpSession(localIp,localRtpPort,remoteIp,remoteRtpPort,audioCodecs);
-		setRtpSession( rtpSession);
-		rtpSessionMap.put(dialog, rtpSession);
+ 		rtpSessionMap.put(dialog, rtpSession);
+ 		
+ 		this.rtpSession = rtpSession;
+ 		if(isPlayListened)
+ 			this.rtpSession.enablePlay();
     }
 	 
 	public SipStack getSipStack() {
@@ -207,10 +204,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 		rtpSession.sendDtmf(digits,sleepTimeByMilliSecond);
  	}
  	
-  
-	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#invite(java.lang.String, java.lang.String)
-	 */
+ 
 	@Override
 	public void invite(String requestUrl,String callId) {
 		try{
@@ -233,10 +227,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 		}
 
  	}
-  	
- 	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#bye()
-	 */
+ 
  	@Override
 	public void bye() {
   		try {
@@ -298,8 +289,7 @@ public abstract class AbstractSipPhone implements SipPhone {
  	 		TimeUnit.MILLISECONDS.sleep(500);
   			Collection<RtpSession> values = rtpSessionMap.values();
   			for (RtpSession rtpSession : values) {
-  				if(rtpSession!=null)
-  	 				rtpSession.stop();
+   	 				rtpSession.stop();
  			}
     		} catch (InterruptedException e) {
  				e.printStackTrace();
