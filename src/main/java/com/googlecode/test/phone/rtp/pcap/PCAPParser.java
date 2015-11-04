@@ -5,7 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PCAPPackageParser {
+import com.googlecode.test.phone.rtp.pcap.PCAPPackage.PackageData;
+import com.googlecode.test.phone.rtp.pcap.PCAPPackage.PackageHeader;
+
+public class PCAPParser {
 	
  	public int current_p = 0;
  	public int file_p = 0;
@@ -15,7 +18,7 @@ public class PCAPPackageParser {
  	private InputStream inputStream = null;
 
  
-	public PCAPPackageParser(String filename) {
+	public PCAPParser(String filename) {
  		//this.inputStream = this.getClass().getClassLoader().getResourceAsStream(filename);
  		try {
 			this.inputStream = new FileInputStream("D:/319.pcap");
@@ -34,7 +37,7 @@ public class PCAPPackageParser {
 		}
 	}
 
-	public Package getNextPackage() {
+	public PCAPPackage getNextPackage() {
 		if (current_p == 0)
 			if (!checkPCAPHeader())
 				return null;
@@ -42,12 +45,11 @@ public class PCAPPackageParser {
 		if (header == null)
 			return null;
 		long capLen = header.getCapLen();
-		System.err.println(capLen);
-		PackageData data = parseData(capLen);
+ 		PackageData data = parseData(capLen);
 
 		if (data == null)
 			return null;
-		Package pack = new Package(header,data);
+		PCAPPackage pack = new PCAPPackage(header,data);
 		
   		return pack;
 	}
