@@ -18,7 +18,7 @@ public class AckRequestHandler extends AbstractRequestHandler {
 			byte[] sdpContent = ((byte[])(requestEvent.getRequest().getContent()));
 			if (sdpContent != null) {
 				SdpInfo sdpMedia = SdpUtil.parseAudioCodecFromSdpContent(sdpContent);
-				this.sipPhone.setRtpSession(sipPhone.getLocalIp(), sipPhone.getLocalRtpPort(), sdpMedia.getIp(),
+				this.sipPhone.setRtpSession(requestEvent.getDialog().getDialogId(),sipPhone.getLocalIp(), sipPhone.getLocalRtpPort(), sdpMedia.getIp(),
 						sdpMedia.getPort(), sdpMedia.getCodec());
 				this.sipPhone.getRtpSession().start();
 			} else {

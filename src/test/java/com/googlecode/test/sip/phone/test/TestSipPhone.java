@@ -20,7 +20,7 @@ public class TestSipPhone {
 	 	sipPhone.enablePlayListened();
 	 	
 	 //	sipPhone.setEarlyOffer(true);
-	 	sipPhone.invite("sip:10.224.57.78:5060", "fujian");
+	 	sipPhone.invite("sip:10.224.57.202:5060", "fujian");
 	 	TimeUnit.SECONDS.sleep(12);
 
 	 	sipPhone.sendDtmf("12345678#");

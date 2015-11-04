@@ -2,8 +2,11 @@ package com.googlecode.test.phone;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -63,11 +66,15 @@ public abstract class AbstractSipPhone implements SipPhone {
 	protected SipProvider sipProvider;   	
 	protected RtpSession rtpSession;
 	
+	protected Map<String,RtpSession> rtpSessionMap=new HashMap<String,RtpSession>();
+ 	
 	protected ReceivedCallHandleType receivedCallHandleType;
 	
 	protected SipListenerImpl sipListenerImpl;
-   	
-  	{
+ 	
+  	protected ReferFuture referFuture;
+  
+   	{
    		localIp=NetUtil.getLocalIp();
   	 	localSipPort=PortUtil.allocateLocalPort();
   		localRtpPort=PortUtil.allocateLocalPort();
@@ -87,9 +94,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#setSupportRefer(boolean)
-	 */
+ 
 	@Override
 	public void setSupportRefer(boolean isSupportRefer) {
 		this.isSupportRefer = isSupportRefer;
@@ -113,9 +118,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 		return isEarlyOffer;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#setEarlyOffer(boolean)
-	 */
+ 
 	@Override
 	public void setEarlyOffer(boolean isEarlyOffer) {
 		this.isEarlyOffer = isEarlyOffer;
@@ -157,17 +160,12 @@ public abstract class AbstractSipPhone implements SipPhone {
 		this.sipListenerImpl = sipListenerImpl;
 	}
  	
-	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#getReceivedMessages()
-	 */
+ 
 	@Override
 	public ReceivedMessages getReceivedMessages() {
 		return sipListenerImpl.getReceivedMessages();
 	}
- 
-	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#enablePlayListened()
-	 */
+  
 	@Override
 	public void enablePlayListened() {
 		this.isPlayListened = true;
@@ -187,25 +185,21 @@ public abstract class AbstractSipPhone implements SipPhone {
  			this.rtpSession.enablePlay();
 	}
 	
-	public void setRtpSession(String localIp,int localRtpPort,String remoteIp, int remoteRtpPort, Set<AudioCodec> audioCodecs){
-		setRtpSession( new RtpSession(localIp,localRtpPort,remoteIp,remoteRtpPort,audioCodecs));
-   	}
+	public void setRtpSession(String dialog,String localIp,int localRtpPort,String remoteIp, int remoteRtpPort, Set<AudioCodec> audioCodecs){
+		RtpSession rtpSession = new RtpSession(localIp,localRtpPort,remoteIp,remoteRtpPort,audioCodecs);
+		setRtpSession( rtpSession);
+		rtpSessionMap.put(dialog, rtpSession);
+    }
 	 
 	public SipStack getSipStack() {
 		return sipStack;
 	}
- 
-	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#sendDtmf(java.lang.String)
-	 */
+  
 	@Override
 	public void sendDtmf(String dtmfs){
 		sendDtmf(dtmfs,0);
  	}
- 	
- 	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#sendDtmf(java.lang.String, int)
-	 */
+  
  	@Override
 	public void sendDtmf(String digits, int sleepTimeByMilliSecond){
 		if(rtpSession==null)
@@ -247,8 +241,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 	public void bye() {
   		try {
   			if(dialog==null){
-  			    this.stop();
-  			    return;
+   			    return;
   			}
  			 Request byeRequest = this.dialog.createRequest(Request.BYE);
 			 LOG.info(byeRequest);
@@ -303,20 +296,27 @@ public abstract class AbstractSipPhone implements SipPhone {
  		
 		try{
  	 		TimeUnit.MILLISECONDS.sleep(500);
-  			if(rtpSession!=null)
- 				rtpSession.stop();
+  			Collection<RtpSession> values = rtpSessionMap.values();
+  			for (RtpSession rtpSession : values) {
+  				if(rtpSession!=null)
+  	 				rtpSession.stop();
+ 			}
     		} catch (InterruptedException e) {
  				e.printStackTrace();
 			}finally{
       			sipStack.stop();
    		}
-
-	} 
+ 	} 
 	
-	public void stopRtpSession(){
+	public void stopRtpSession(String dialogId){
  		LOG.info("stop rtp for:"+this);
-  		if(rtpSession!=null)
- 				rtpSession.stop();
+ 		RtpSession rtpSessionInMaps = this.rtpSessionMap.remove(dialogId);
+   		if(rtpSessionInMaps!=null)
+   			rtpSessionInMaps.stop();
+   		
+   		if(rtpSessionInMaps==this.rtpSession)
+   			this.rtpSession=null;
+    		
  	} 
 
 	public Set<AudioCodec> getSupportAudioCodec() {
@@ -351,11 +351,18 @@ public abstract class AbstractSipPhone implements SipPhone {
 		this.dialog = dialog;
 	}
 
+ 
+	public ReferFuture getReferFuture() {
+		return referFuture;
+	}
+
+ 	public void setReferFuture(ReferFuture referFuture) {
+		this.referFuture = referFuture;
+	}
+ 
 	@Override
 	public String toString() {
 		return "AbstractSipPhone [localIp=" + localIp + ", sipPort=" + localSipPort + ", rtpPort=" + localRtpPort + "]";
 	}
-
-
 
 }

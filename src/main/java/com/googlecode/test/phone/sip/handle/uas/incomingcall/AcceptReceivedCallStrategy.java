@@ -70,7 +70,7 @@ public class AcceptReceivedCallStrategy extends ReceivedCallStrategy {
 				newServerTransaction.sendResponse(response);
 
 				if (isEearlyOffer) {
-					this.abstractSipPhone.setRtpSession(this.abstractSipPhone.getLocalIp(),
+					this.abstractSipPhone.setRtpSession(newServerTransaction.getDialog().getDialogId(),this.abstractSipPhone.getLocalIp(),
 							this.abstractSipPhone.getLocalRtpPort(), audioSdpMedia.getIp(), audioSdpMedia.getPort(),
 							negotiationCodec);
 				}

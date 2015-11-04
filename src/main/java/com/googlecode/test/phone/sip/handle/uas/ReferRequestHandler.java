@@ -1,6 +1,7 @@
 package com.googlecode.test.phone.sip.handle.uas;
 
 import java.text.ParseException;
+import java.util.concurrent.TimeUnit;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -12,6 +13,7 @@ import javax.sip.SipProvider;
 import javax.sip.TransactionAlreadyExistsException;
 import javax.sip.TransactionUnavailableException;
 import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
 import javax.sip.header.ContentTypeHeader;
 import javax.sip.header.EventHeader;
@@ -26,6 +28,7 @@ import javax.sip.message.Response;
 import org.apache.log4j.Logger;
 
 import com.googlecode.test.phone.AbstractSipPhone;
+import com.googlecode.test.phone.ReferFuture;
 import com.googlecode.test.phone.sip.SipConstants;
 
  
@@ -72,6 +75,8 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 
 	private EventHeader eventHeader;
 	private Dialog dialog;
+	
+	
 
 	public ReferRequestHandler(AbstractSipPhone sipPhone) {
 		super(sipPhone);
@@ -83,7 +88,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 		if(supportRefer){
 	        refer(requestEvent);
  		}else{
- 			this.sipPhone.stopRtpSession();
+ 			this.sipPhone.stopRtpSession(requestEvent.getDialog().getDialogId());
  		}
  		 
     }
@@ -165,11 +170,23 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 
             sendNotify( Response.TRYING, "Trying" );
             
+            ReferFuture referFuture = new ReferFuture();
+			this.sipPhone.setReferFuture(referFuture);
+ 			
+		    CallIdHeader callIdHeader=(CallIdHeader)refer.getHeader(CallIdHeader.NAME);
+             
+            this.sipPhone.invite(refTo.getAddress().getURI().toString(), callIdHeader.getCallId()+"_refer");
             
-                                  
-  
-            // Then call the refer-to
-           // sendInvite( refTo );
+            Integer integer;
+			try {
+				integer = referFuture.get(2, TimeUnit.SECONDS);
+	            sendNotify( integer, "" );
+ 			} catch (Exception e) {
+	            sendNotify(503, e.getMessage());
+			} finally{
+				this.sipPhone.setReferFuture(null);
+ 			}
+    
 	}
 
         private void sendNotify( int code, String reason )

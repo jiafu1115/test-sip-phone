@@ -27,6 +27,7 @@ public class ByeRequestHandler extends AbstractRequestHandler {
  		Request request = requestEvent.getRequest();
  		try {
  			ServerTransaction serverTransaction = requestEvent.getServerTransaction();
+ 			String dialogId = serverTransaction.getDialog().getDialogId();
   			Header alsoHeader = request.getHeader("Also");
   			
  			if (serverTransaction != null) {
@@ -37,11 +38,11 @@ public class ByeRequestHandler extends AbstractRequestHandler {
  			
  			if(alsoHeader!=null&&this.sipPhone.isSupportRefer()){
   	 				CallIdHeader callIdHeader=(CallIdHeader)request.getHeader(CallIdHeader.NAME);
- 	 				this.sipPhone.stopRtpSession();
+ 	 				this.sipPhone.stopRtpSession(dialogId);
  					this.sipPhone.invite(alsoHeader.toString(), callIdHeader.getCallId()+"_also");
  				 				
  			}else{
-  				sipPhone.stopRtpSession();
+  				sipPhone.stopRtpSession(dialogId);
  			}
  
 		} catch (Exception ex) {

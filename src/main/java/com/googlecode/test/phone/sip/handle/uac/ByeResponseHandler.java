@@ -12,7 +12,8 @@ public class ByeResponseHandler extends AbstractResponseHandler {
 
 	@Override
 	public void handle(ResponseEvent responseEvent) {
-		sipPhone.stopRtpSession();
+		String dialogId = responseEvent.getDialog().getDialogId();
+		sipPhone.stopRtpSession(dialogId);
 	}
 
 }
