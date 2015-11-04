@@ -14,9 +14,9 @@ public class TestSipPhone {
 	 	public static void main(String[] args) throws InterruptedException, ParseException, ExecutionException {
 	 		 
 	  	 /*	SipPhone sipPhone = new AnonymousSipPhone();
-		 	System.out.println(sipPhone.getLocalSipUri()); */
+		 	System.out.println(sipPhone.getLocalSipUri());  
  
- 
+ */
  
 	    SipPhone sipPhone = new AnonymousSipPhone();
 

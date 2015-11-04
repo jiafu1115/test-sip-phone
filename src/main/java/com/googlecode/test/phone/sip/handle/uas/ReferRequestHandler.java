@@ -159,6 +159,8 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             /*
              * JvB: The REFER MUST be answered first.
              */
+            
+            LOG.info(response);
             st.sendResponse(response);
 
             // NOTIFY MUST have "refer" event, possibly with id
