@@ -2,56 +2,47 @@ package com.googlecode.test.sip.phone.test;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import com.googlecode.test.phone.AnonymousSipPhone;
+import com.googlecode.test.phone.ReferFuture;
 import com.googlecode.test.phone.SipPhone;
 
 public class TestSipPhone {
 
-	 	public static void main(String[] args) throws InterruptedException, ParseException {
-	 		
-	 		
-	 		new File("C:/Users/jiafu/git/test-sip-phone");
-			
- 	
-	 	SipPhone sipPhone = new AnonymousSipPhone();
+	 	public static void main(String[] args) throws InterruptedException, ParseException, ExecutionException {
+	 		 
+	  	 /*	SipPhone sipPhone = new AnonymousSipPhone();
+		 	System.out.println(sipPhone.getLocalSipUri()); */
+ 
+ 
+ 
+	    SipPhone sipPhone = new AnonymousSipPhone();
+
+ 	 	System.out.println(sipPhone.getLocalSipUri());
 	 	
-	 	sipPhone.enablePlayListened();
+ 	 	sipPhone.setSupportRefer(true);
+ 	 	
+ 	 	sipPhone.enablePlayListened();
 	 	
-	 //	sipPhone.setEarlyOffer(true);
-	 	sipPhone.invite("sip:10.224.57.202:5060", "fujian");
-	 	TimeUnit.SECONDS.sleep(12);
+ 	 	sipPhone.invite("sip:5510571803@10.224.89.189:5060", "fujian222");
+	 	TimeUnit.SECONDS.sleep(8);
 
 	 	sipPhone.sendDtmf("12345678#");
 	 	
-	 	TimeUnit.SECONDS.sleep(12);
+	 	TimeUnit.SECONDS.sleep(5);
 
- 
-	 	sipPhone.bye();
+	 	sipPhone.sendDtmf("1#");
+
 	 	
-	   // TimeUnit.SECONDS.sleep(4); 
-	    
+	 	TimeUnit.SECONDS.sleep(300); 
+ 
+ 
+	 	//sipPhone.bye();
+	 	 
+ 	  
 	 	}
-	 		
-	 /*		//AuthorizationHeader createAuthorizationHeader = SipConstants.Factorys.HEADER_FACTORY.createAuthorizationHeader("Digest");
-	 		//createAuthorizationHeader.setAlgorithm("Digest");
-	 		//System.out.println(createAuthorizationHeader.toString());
-	 		
-	 		PhoneExtension phoneExtension=new PhoneExtension("3002", "3002", "10.224.2.213", "sip:10.224.2.213");
-	 		RegisteredSipPhone sipPhone = new RegisteredSipPhone(phoneExtension);
-	 		sipPhone.test();
-	 		
-	 		sipPhone.unregister();
-
-			
-			sipPhone.register();
-			
-			TimeUnit.SECONDS.sleep(10);
-			
-			sipPhone.unregister();
-		 
-			//sipPhone.invite("3002@10.224.2.213", "fujian");
-	 		
-		}*/
+	 	
+	 	
 }

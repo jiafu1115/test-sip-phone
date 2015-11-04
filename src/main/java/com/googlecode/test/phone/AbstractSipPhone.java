@@ -309,10 +309,12 @@ public abstract class AbstractSipPhone implements SipPhone {
  	} 
 	
 	public void stopRtpSession(String dialogId){
- 		LOG.info("stop rtp for:"+this);
+ 		LOG.info("[rtp]stop rtp for phone:"+this);
  		RtpSession rtpSessionInMaps = this.rtpSessionMap.remove(dialogId);
-   		if(rtpSessionInMaps!=null)
+   		if(rtpSessionInMaps!=null){
+   	 		LOG.info("[rtp]stop rtp::"+rtpSessionInMaps);
    			rtpSessionInMaps.stop();
+     	}
    		
    		if(rtpSessionInMaps==this.rtpSession)
    			this.rtpSession=null;

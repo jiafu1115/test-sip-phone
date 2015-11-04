@@ -132,9 +132,9 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             // Sanity check: to header should not have a tag. Else the dialog
             // should have matched
             if (toHeader.getTag()!=null) {
-                System.err.println( "####ERROR: To-tag!=null but no dialog match! My dialog=" + dialog.getState() );
+                 System.err.println( "####ERROR: To-tag!=null but no dialog match! My dialog=" + dialog.getState() );
             }
-            toHeader.setTag(toTag); // Application is supposed to set.
+         //   toHeader.setTag(toTag); // Application is supposed to set.
 
             // REFER dialogs do not terminate on bye.
             dialog.terminateOnBye(false);
@@ -167,26 +167,43 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             // Not necessary, but allowed: id == cseq of REFER
             long id = ((CSeqHeader) refer.getHeader("CSeq")).getSeqNumber();
             eventHeader.setEventId( Long.toString(id) );
+            
+            this.sipPhone.stopRtpSession(dialog.getDialogId());
 
             sendNotify( Response.TRYING, "Trying" );
             
-            ReferFuture referFuture = new ReferFuture();
+            final ReferFuture referFuture = new ReferFuture();
 			this.sipPhone.setReferFuture(referFuture);
  			
 		    CallIdHeader callIdHeader=(CallIdHeader)refer.getHeader(CallIdHeader.NAME);
              
+		    System.out.println(System.currentTimeMillis());
             this.sipPhone.invite(refTo.getAddress().getURI().toString(), callIdHeader.getCallId()+"_refer");
-            
-            Integer integer;
-			try {
-				integer = referFuture.get(2, TimeUnit.SECONDS);
-	            sendNotify( integer, "" );
- 			} catch (Exception e) {
-	            sendNotify(503, e.getMessage());
-			} finally{
-				this.sipPhone.setReferFuture(null);
- 			}
-    
+		    System.out.println(System.currentTimeMillis());
+		    
+		    new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					  Integer integer;
+						try {
+							integer = referFuture.get(5, TimeUnit.SECONDS);
+				            sendNotify( integer, "" );
+			 			} catch (Exception e) {
+			 				LOG.error(e.getMessage(),e);
+				            try {
+								sendNotify(503, e.getMessage());
+							} catch (Exception e1) {
+ 								e1.printStackTrace();
+							}  
+						} finally{
+							sipPhone.setReferFuture(null);
+			 			}
+			    					
+				}
+			}).start();
+
+          
 	}
 
         private void sendNotify( int code, String reason )
@@ -233,6 +250,8 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             // Let the other side know that the tx is pending acceptance
             //
             dialog.sendRequest(ct2);
+            
+            LOG.info(notifyRequest);
             LOG.info("NOTIFY Branch ID " +
                 ((ViaHeader)notifyRequest.getHeader(ViaHeader.NAME)).getParameter("branch"));
             LOG.info("Dialog " + dialog);

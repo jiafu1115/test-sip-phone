@@ -82,6 +82,9 @@ public class InviteResponseHandler extends AbstractResponseHandler {
 			if (arg0.getResponse().getStatusCode() == SIPResponse.OK) {
 				
 				ReferFuture referFuture = this.sipPhone.getReferFuture();
+				
+				
+				System.err.println("xinxiu---------------"+ referFuture);
 				if(referFuture!=null){
 					referFuture.setResult(SIPResponse.OK);
 				}
@@ -112,7 +115,7 @@ public class InviteResponseHandler extends AbstractResponseHandler {
 				
  				ReferFuture referFuture = this.sipPhone.getReferFuture();
 				if(referFuture!=null){
-					referFuture.setResult(200);
+					referFuture.setResult(arg0.getResponse().getStatusCode());
 				}
  			}
 		} catch (Exception e) {
