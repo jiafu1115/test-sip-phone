@@ -1,132 +1,134 @@
 package com.googlecode.test.phone.rtp.pcap.protocol;
 
 
-//pcap���ĸ�ʽ
+ 
 //0-1:source_port
 //2-3:dest_port
-//4-5:length (����ͷ������)
+//4-5:length  
 //6-7:checksum
  
 public class UDP {
 	
-	private int source_port = -1;
-	private int dest_port = -1;
-	private int length = -1;
-	private int dataLength = -1;
-	private int dataStart = -1;
-	private byte[] checksum = null;
-	private byte[] udpData = null;
+	private int source_port;
+	private int dest_port;
+	private int length;
+ 	private byte[] checksum;
+	private byte[] udpData;
 	 
 	private int start;
 	private byte[] raw_data;
-	
+	private int dataLength;
  
 	public UDP(byte[] raw_data, int start)
 	{
 		this.raw_data = raw_data;
 		this.start = start;
+		
+		//basic headers;
+		setSourcePort();
+		setDestPort();
+		setLength();
+		setChecksum();
+		
+		//data part
+		setDataLength(this.length);
+		setUdpdata(this.dataLength);
 	}
 	
-	//UDP�ĳ���-8 ��8��ͷ���ȣ�
-	public int getDataLength()
+ 	public int getDataLength()
 	{
-		if(this.dataLength == -1)
-		{
-			this.getLength();
-			this.dataLength = this.length - 8;
-			if(this.dataLength < 0)
-				this.dataLength = 0;
-		}
-		return this.dataLength;
+ 		return this.dataLength;
+	}
+
+	private void setDataLength(int length) {
+		this.dataLength = length - 8;
+		if(this.dataLength < 0)
+			this.dataLength = 0;
 	}
 	
-	//UDPͷ�̶�8λ��
-	public int getDataStart()
+ 	public int getDataStart()
 	{
-		if(dataStart == -1)
-		{
-			getLength();
-			dataStart = start + 8;
-		}
-		return dataStart;
+ 		return start + 8;
 	}
 	public int getSourcePort()
 	{
-		if(this.source_port == -1)
-		{
-			source_port = raw_data[start+1] & 0xFF;
-			source_port |= ((raw_data[start] << 8) & 0xFF00);
-		}
-		
-		return this.source_port;
+ 		return this.source_port;
+	}
+
+	private void setSourcePort() {
+		source_port = raw_data[start+1] & 0xFF;
+		source_port |= ((raw_data[start] << 8) & 0xFF00);
 	}
 	
 	public int getDestPort()
 	{
-		if(this.dest_port == -1)
-		{
-			dest_port = raw_data[start+3] & 0xFF;
-			dest_port |= ((raw_data[start+2] << 8) & 0xFF00);
-		}
-		return this.dest_port;
+ 		return this.dest_port;
+	}
+
+	private void setDestPort() {
+		dest_port = raw_data[start+3] & 0xFF;
+		dest_port |= ((raw_data[start+2] << 8) & 0xFF00);
 	}
 	
 	
-	//2λ
-	public int getLength()
+ 	public int getLength()
 	{
-		if(this.length == -1)
-		{
-			byte low = raw_data[start+5];
-			byte high = raw_data[start+4];
-			length = (int)low & 0xFF;
-			length |= ((int)high << 8) & 0xFF00;
-			
-		}
-		return this.length;
+ 		return this.length;
+	}
+
+	private void setLength() {
+		byte low = raw_data[start+5];
+		byte high = raw_data[start+4];
+		length = (int)low & 0xFF;
+		length |= ((int)high << 8) & 0xFF00;
 	}
 	
 	public byte[] getChecksum()
 	{
-		if(this.checksum == null)
-		{
-			this.checksum = new byte[2];
-			checksum[0] = raw_data[start+6];
-			checksum[1] = raw_data[start+7];
-		}
-		return this.checksum;
+ 		return this.checksum;
+	}
+
+	private void setChecksum() {
+		this.checksum = new byte[2];
+		checksum[0] = raw_data[start+6];
+		checksum[1] = raw_data[start+7];
 	}
 	
 	public byte[] getUDPData()
 	{
-		if(this.udpData == null)
-		{
-			int len = getDataLength();
-			if(len < 0)
-			{
-				return null;
-			}	
-			udpData = new byte[len];
-			getDataStart();
-			int aa_len = raw_data.length;
-			
-			//wireShardץȡ�İ�������
-			if(len > aa_len - this.start)
-			{
-				this.udpData = new byte[0];
-				return udpData;
-			}
-			if(len != 0 )
-			{
-				try{
-					System.arraycopy(raw_data, this.start, udpData, 0, len);
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-				
-		}
-		return this.udpData;
+ 		return this.udpData;
 	}
+
+	private void setUdpdata(int dataLength) {
+ 		if(dataLength < 0)
+		{
+			this.udpData = null;
+		}	
+		this.udpData = new byte[dataLength];
+		getDataStart();
+		int aa_len = raw_data.length;
+		
+		if(dataLength > aa_len - this.start)
+		{
+			this.udpData = new byte[0];
+ 		}
+		if(dataLength != 0 )
+		{
+			try{
+				//FIXME  //	System.arraycopy(raw_data, this.start, udpData, 0, len);
+ 				System.arraycopy(raw_data, getDataStart(), this.udpData, 0, dataLength);
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "UDP [source_port=" + source_port + ", dest_port=" + dest_port
+				+ ", length=" + length + ", dataLength=" + dataLength + "]";
+	}
+	
+	
 }

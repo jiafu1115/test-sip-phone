@@ -1,6 +1,5 @@
 package com.googlecode.test.phone.rtp.pcap.protocol;
 
-import java.util.Arrays;
 
 public class Ethernet2 {
  
@@ -11,9 +10,10 @@ public class Ethernet2 {
  	private byte raw_data[] = null;
 	private int start;
 	
- 	private byte[] macSource = null;
-	private byte[] macDest = null;
+ 	private byte[] macSource;
+	private byte[] macDest;
   	private PayloadType macDataType;
+  	
 	public Ethernet2(byte []raw_data, int start)
 	{
 		this.raw_data = raw_data;
@@ -57,8 +57,7 @@ public class Ethernet2 {
 
 	@Override
 	public String toString() {
-		return "Ethernet2 [macSource=" + Arrays.toString(macSource) + ", macDest=" + Arrays.toString(macDest)
-				+ ", macDataType=" + macDataType + "]";
+		return "Ethernet2 [macDataType=" + macDataType + "]";
 	}
 	
 	

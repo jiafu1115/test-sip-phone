@@ -26,12 +26,10 @@ public class PackageData {
 			IP ipv4 = new IP(raw_data, ethernet2.getDataStart());
 			this.ip = ipv4;
 			if (ipv4.getDataType() == IP.PayloadType.UDP) {
-				UDP udp = new UDP(raw_data, ipv4.getStart()
-						+ ipv4.getHeaderLength());
+				UDP udp = new UDP(raw_data, ipv4.getDataStart());
 				this.udp = udp;
 			} else if (ipv4.getDataType() == IP.PayloadType.TCP) {
-				TCP tcp = new TCP(raw_data, ipv4.getStart()
-						+ ipv4.getHeaderLength(), ipv4.getTotalLength()
+				TCP tcp = new TCP(raw_data, ipv4.getDataStart(), ipv4.getTotalLength()
 						- ipv4.getHeaderLength());
 				this.tcp = tcp;
 			}

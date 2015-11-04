@@ -35,6 +35,10 @@ public class IP {
 		this.raw_data = raw_data;
 		this.start = start;
 		
+		setVersion();
+		setHeaderLength();
+		setTotalLength();
+		
 		byte b = this.raw_data[start + 9];
 		int type = (int)b;
 		if(type == 0x06)
@@ -43,6 +47,10 @@ public class IP {
 			this.dataType = PayloadType.UDP;
 		else
 			this.dataType = PayloadType.UNKNOWN;
+		
+		setSrcAddr();
+		setDestAddr();
+		
 	}
 	
 	public boolean isMoreFragment()
@@ -57,32 +65,34 @@ public class IP {
 	
 	public String getVersion()
 	{
-		if(this.version == null)
-		{
-			byte b = this.raw_data[start];
-			int v = (int)(b & 0xF0);
-			v = (v >> 4) & 0x0F;
-			version = Integer.toString((int)v);
-		}
-		return this.version;
+ 		return this.version;
+	}
+
+	private void setVersion() {
+		byte b = this.raw_data[start];
+		int v = (int)(b & 0xF0);
+		v = (v >> 4) & 0x0F;
+		version = Integer.toString((int)v);
 	}
 	public int getHeaderLength()
 	{
-		if(headerLength == -1)
-		{
-			byte b = this.raw_data[start];
-			
-			this.headerLength = (int)(b & 0x0F);
-			this.headerLength = this.headerLength * 4;
-		}
-		return this.headerLength;
+ 		return this.headerLength;
 	}
-	
-	
-	
+
+	private void setHeaderLength() {
+		byte b = this.raw_data[start];
+		
+		this.headerLength = (int)(b & 0x0F);
+		this.headerLength = this.headerLength * 4;
+	}
+	 
 	public int getStart()
 	{
 		return start;
+	}
+	
+	public int getDataStart(){
+		return start + this.headerLength;
 	}
 	
 	public int getTimeToLive()
@@ -102,23 +112,15 @@ public class IP {
 	
 	public String getSrcAddr()
 	{
-		if(this.srcAddr == null)
-		{
-			parseSrcAddr();
-		}
-		return this.srcAddr;
+ 		return this.srcAddr;
 	}
 	public byte[] getSrcAddrBytes()
 	{
-		if(this.srcAddrBytes == null)
-		{
-			parseSrcAddr();
-		}
+		 
 		return this.srcAddrBytes;
 	}
-	private void parseSrcAddr()
-	{
-		this.getHeaderLength();
+	 
+	private void setSrcAddr() {
 		this.srcAddrBytes = new byte[4];
 		try{
 			System.arraycopy(this.raw_data, start+this.headerLength-8, this.srcAddrBytes, 0, 4);
@@ -138,11 +140,9 @@ public class IP {
 		this.srcAddr = str.toString();
 	}
 	
-	private void parseDestAddr()
+	private void setDestAddr()
 	{
-		this.getHeaderLength();
-		String version = this.getVersion();
-		StringBuffer str = new StringBuffer();
+ 		StringBuffer str = new StringBuffer();
 		if(version.equals("4"))
 		{
 			this.destAddrBytes = new byte[4];
@@ -185,34 +185,26 @@ public class IP {
 	
 	public byte[] getDestAddrBytes()
 	{
-		if(this.destAddrBytes == null)
-		{
-			parseDestAddr();
-		}
-		return this.destAddrBytes;
+ 		return this.destAddrBytes;
 	}
 	
 	public String getDestAddr()
 	{
-		if(this.destAddr == null)
-		{
-			parseDestAddr();
-		}
-		return this.destAddr;
+ 		return this.destAddr;
 	}
 
 	public int getTotalLength()
 	{
-		if(this.totalLength == -1)
-		{
-			byte[] buf = new byte[4];
-			buf[0] = 0x00;
-			buf[1] = 0x00;
-			buf[2] = this.raw_data[start+2];
-			buf[3] = this.raw_data[start+3];
-			this.totalLength = ByteUtil.byte2Int_high(buf);
-		}
-		return totalLength;
+ 		return totalLength;
+	}
+
+	private void setTotalLength() {
+		byte[] buf = new byte[4];
+		buf[0] = 0x00;
+		buf[1] = 0x00;
+		buf[2] = this.raw_data[start+2];
+		buf[3] = this.raw_data[start+3];
+		this.totalLength = ByteUtil.byte2Int_high(buf);
 	}
 	public byte[] getIdentification()
 	{
@@ -280,12 +272,12 @@ public class IP {
 
 	@Override
 	public String toString() {
-		return "IP [srcAddr=" + srcAddr + ", srcAddrBytes="
-				+ Arrays.toString(srcAddrBytes) + ", destAddr=" + destAddr
-				+ ", destAddrBytes=" + Arrays.toString(destAddrBytes)
-				+ ", totalLength=" + totalLength + ", dataType=" + dataType
-				+ "]";
+		return "IP [srcAddr=" + srcAddr + ", destAddr=" + destAddr
+				+ ", totalLength=" + totalLength + ", headerLength="
+				+ headerLength + ", dataType=" + dataType + "]";
 	}
+
+	 
 	
 	
 }

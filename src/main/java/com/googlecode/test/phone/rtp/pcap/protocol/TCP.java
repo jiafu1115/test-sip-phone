@@ -1,9 +1,7 @@
 package com.googlecode.test.phone.rtp.pcap.protocol;
 
 import com.googlecode.test.phone.rtp.pcap.ByteUtil;
-
-
-//ͬUDP��ͬ��TCPͷ�Ǹ�������
+ 
 public class TCP {
 	private int source_port = -1;
 	private int dest_port = -1;
@@ -29,149 +27,147 @@ public class TCP {
 		this.raw_data = raw_data;
 		this.start = start;
 		this.tcp_len = tcp_len;
-	}
+		
+		setSourcePort();
+		setDestPort();
+		setWindowsSize();
+		setHeaderLength();
+		setSequenceNumber();
+		setChecksum();
+		setAckNumber();
+		setFlags();
+		
+		setDataStart(this.headerLength);
+		setOptions(this.headerLength);
+		setDataLength(this.headerLength);
+		setTcpData(this.headerLength,this.dataLength);
+  	}
 	
 	public int getDataLength()
 	{
-		if(this.dataLength == -1)
-		{
-			this.getDataStart();
-			this.dataLength = tcp_len - this.headerLength;
-//			if(this.dataLength < 0)
-//				this.dataLength = 0;
-		}
-		return this.dataLength;
+ 		return this.dataLength;
+	}
+	private void setDataLength(int headerLength) {
+		this.dataLength = tcp_len - headerLength;
 	}
 	
 	public int getDataStart()
 	{
-		if(dataStart == -1)
-		{
-			getHeaderLength();
-			dataStart = start + this.headerLength;
-			if(dataStart > this.raw_data.length)
-				dataStart = raw_data.length-1;
-		}
-		return dataStart;
+ 		return dataStart;
 	}
-
-	
+	private void setDataStart(int headerLength) {
+ 		dataStart = start + headerLength;
+		if(dataStart > this.raw_data.length)
+			dataStart = raw_data.length-1;
+	}
+ 	
 	public int getHeaderLength()
 	{
-		if(this.headerLength == -1)
-		{
-			byte len = raw_data[start+12];
-			headerLength = (int)len & 0xFF;
-			headerLength = ((int)headerLength >> 4) & 0x0F;
-			headerLength = headerLength*4;
-		}
-		return this.headerLength;
+ 		return this.headerLength;
+	}
+	private void setHeaderLength() {
+		byte len = raw_data[start+12];
+		headerLength = (int)len & 0xFF;
+		headerLength = ((int)headerLength >> 4) & 0x0F;
+		headerLength = headerLength*4;
 	}
 	
 	public int getSequenceNumber()
 	{
-		if(this.sequenceNum == -1)
-		{
-			byte[] b = new byte[4];
-			b[0] = raw_data[start+4];
-			b[1] = raw_data[start+5];
-			b[2] = raw_data[start+6];
-			b[3] = raw_data[start+7];
-			this.sequenceNum = (int)ByteUtil.pcapBytesToLong(b, 0);
-		}
-		return this.sequenceNum;
+ 		return this.sequenceNum;
+	}
+	private void setSequenceNumber() {
+		byte[] b = new byte[4];
+		b[0] = raw_data[start+4];
+		b[1] = raw_data[start+5];
+		b[2] = raw_data[start+6];
+		b[3] = raw_data[start+7];
+		this.sequenceNum = (int)ByteUtil.pcapBytesToLong(b, 0);
 	}
 	public int getAckNumber()
 	{
-		if(this.ackNum == -1)
-		{
-			byte[] b = new byte[4];
-			b[0] = raw_data[start + 8];
-			b[1] = raw_data[start + 9];
-			b[2] = raw_data[start + 10];
-			b[3] = raw_data[start + 11];
-			this.sequenceNum = (int)ByteUtil.pcapBytesToLong(b, 0);
-		}
-		return this.ackNum;
+ 		return this.ackNum;
+	}
+	private void setAckNumber() {
+		byte[] b = new byte[4];
+		b[0] = raw_data[start + 8];
+		b[1] = raw_data[start + 9];
+		b[2] = raw_data[start + 10];
+		b[3] = raw_data[start + 11];
+		this.ackNum = (int)ByteUtil.pcapBytesToLong(b, 0);
 	}
 	public byte getFlags()
 	{
-		return raw_data[start + 13];
+		return this.flag;
+	}
+	private void setFlags() {
+		this.flag = raw_data[start + 13];
 	}
 	public int getWindowSize()
 	{
-		if(this.windowSize == -1)
-		{
-			windowSize = raw_data[start+15] & 0xFF;
-			windowSize |= ((raw_data[start+14] << 8) & 0xFF00);
-		}
-		return this.windowSize;
+ 		return this.windowSize;
+	}
+	private void setWindowsSize() {
+		windowSize = raw_data[start+15] & 0xFF;
+		windowSize |= ((raw_data[start+14] << 8) & 0xFF00);
 	}
 	public byte[] getChecksum()
 	{
-		if(this.checksum == null)
-		{
-			checksum = new byte[2];
-			checksum[0] = raw_data[start + 16];
-			checksum[1] = raw_data[start + 17];
-		}
-		return this.checksum;
+ 		return this.checksum;
+	}
+	private void setChecksum() {
+		checksum = new byte[2];
+		checksum[0] = raw_data[start + 16];
+		checksum[1] = raw_data[start + 17];
 	}
 	public int getSourcePort()
 	{
-		if(this.source_port == -1)
-		{
-			source_port = raw_data[start+1] & 0xFF;
-			source_port |= ((raw_data[start] << 8) & 0xFF00);
-		}
-		return source_port;
+ 		return source_port;
+	}
+	private void setSourcePort() {
+		source_port = raw_data[start+1] & 0xFF;
+		source_port |= ((raw_data[start] << 8) & 0xFF00);
 	}
 	public int getDestPort()
 	{
-		if(this.dest_port == -1)
-		{
-			dest_port = raw_data[start+3] & 0xFF;
-			dest_port |= ((raw_data[start+2] << 8) & 0xFF00);
-		}
-		return dest_port;
+ 		return dest_port;
+	}
+	private void setDestPort() {
+		dest_port = raw_data[start+3] & 0xFF;
+		dest_port |= ((raw_data[start+2] << 8) & 0xFF00);
 	}
 	public byte[] getOptions()
 	{
-		if(this.options == null)
+ 		return this.options;
+	}
+	private void setOptions(int headerLength) {
+ 		this.options = new byte[8];
+		for(int i=0; i<8; i++)
 		{
-			this.getHeaderLength();
-			this.options = new byte[8];
-			for(int i=0; i<8; i++)
-			{
-				options[i] = raw_data[start + this.headerLength - 8 + i];
-			}
+			options[i] = raw_data[start + headerLength - 8 + i];
 		}
-		return this.options;
 	}
 	public byte[] getTCPData()
 	{
-		if(this.tcpData == null)
+ 		return tcpData;
+	}
+	private void setTcpData(int headerLength, int dataLength) {
+		int data_start = this.start + this.headerLength;
+		int data_end = this.start + this.dataLength;
+		if(data_end > data_start)
 		{
-			this.getHeaderLength();
-			this.getDataLength();
-			int data_start = this.start + this.headerLength;
-			int data_end = this.start + this.dataLength;
-			if(data_end > data_start)
+			int len = data_end - data_start;
+			this.tcpData = new byte[len];
+			try{
+				System.arraycopy(raw_data, data_start, tcpData, 0, len);
+			}catch(Exception e)
 			{
-				int len = data_end - data_start;
-				this.tcpData = new byte[len];
-				try{
-					System.arraycopy(raw_data, data_start, tcpData, 0, len);
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-			else
-			{
-				this.tcpData = new byte[0];
+				e.printStackTrace();
 			}
 		}
-		return tcpData;
+		else
+		{
+			this.tcpData = new byte[0];
+		}
 	}
 }
