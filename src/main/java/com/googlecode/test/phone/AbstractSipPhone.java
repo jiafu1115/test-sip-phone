@@ -200,7 +200,7 @@ public abstract class AbstractSipPhone implements SipPhone {
  	@Override
 	public void sendDtmf(String digits, int sleepTimeByMilliSecond){
 		if(rtpSession==null)
-			throw new RuntimeException("sip negotition not setup");
+			throw new RuntimeException("sip negotition not setup or rtp session closed");
 		rtpSession.sendDtmf(digits,sleepTimeByMilliSecond);
  	}
  	
@@ -234,12 +234,11 @@ public abstract class AbstractSipPhone implements SipPhone {
   			if(dialog==null){
    			    return;
   			}
- 			 Request byeRequest = this.dialog.createRequest(Request.BYE);
-			 LOG.info(byeRequest);
-	         ClientTransaction ct = sipProvider.getNewClientTransaction(byeRequest);
-	         dialog.sendRequest(ct);
-
-		} catch (SipException e) {
+ 			Request byeRequest = this.dialog.createRequest(Request.BYE);
+			LOG.info(byeRequest);
+	        ClientTransaction clientTransaction = sipProvider.getNewClientTransaction(byeRequest);
+	        dialog.sendRequest(clientTransaction);
+ 		} catch (SipException e) {
  			e.printStackTrace();
 		}  
   	}
@@ -278,10 +277,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 		return request;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.googlecode.test.phone.SipPhone#stop()
-	 */
-	@Override
+ 	@Override
 	public void stop(){
  		LOG.info("sip stack stop for:"+this);
  		
