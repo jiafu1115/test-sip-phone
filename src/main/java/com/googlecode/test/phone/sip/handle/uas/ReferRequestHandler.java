@@ -137,10 +137,8 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             // REFER dialogs do not terminate on bye.
             dialog.terminateOnBye(false);
             if (dialog != null) {
-                LOG.info("Dialog " + dialog);
-                LOG.info("Dialog state " + dialog.getState());
-                LOG.info( "local tag=" + dialog.getLocalTag() );
-                LOG.info( "remote tag=" + dialog.getRemoteTag() );
+            	if(LOG.isDebugEnabled())
+            		LOG.debug("Dialog " + dialog+ " Dialog state " + dialog.getState()+" local tag=" + dialog.getLocalTag() +" remote tag=" + dialog.getRemoteTag()); 
             }
              
             // Both 2xx response to SUBSCRIBE and NOTIFY need a Contact
@@ -154,10 +152,6 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             }
             response.addHeader( expires );
 
-            /*
-             * JvB: The REFER MUST be answered first.
-             */
-            
             LOG.info(response);
             st.sendResponse(response);
 
@@ -236,7 +230,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             notifyRequest.addHeader(sstate);
             notifyRequest.setHeader(eventHeader);
 
-             ContactHeader contactHeader = SipConstants.Factorys.HEADER_FACTORY.createContactHeader(SipConstants.Factorys.ADDRESS_FACTORY.createAddress(this.sipPhone.getLocalSipUri()));
+            ContactHeader contactHeader = SipConstants.Factorys.HEADER_FACTORY.createContactHeader(SipConstants.Factorys.ADDRESS_FACTORY.createAddress(this.sipPhone.getLocalSipUri()));
             notifyRequest.setHeader(contactHeader);
             ClientTransaction ct2 = this.sipPhone.getSipProvider().getNewClientTransaction(notifyRequest);
 
@@ -248,10 +242,15 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             dialog.sendRequest(ct2);
             
             LOG.info(notifyRequest);
-            LOG.info("NOTIFY Branch ID " +
-                ((ViaHeader)notifyRequest.getHeader(ViaHeader.NAME)).getParameter("branch"));
-            LOG.info("Dialog " + dialog);
-            LOG.info("Dialog state after NOTIFY: " + dialog.getState());
+            
+        	if(LOG.isDebugEnabled()){
+                LOG.debug("NOTIFY Branch ID " +
+                        ((ViaHeader)notifyRequest.getHeader(ViaHeader.NAME)).getParameter("branch"));
+                    LOG.debug("Dialog " + dialog);
+                    LOG.debug("Dialog state after NOTIFY: " + dialog.getState());
+        	}
+
+
     }
 
 }
