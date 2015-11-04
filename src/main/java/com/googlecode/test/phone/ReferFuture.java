@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.AbstractFuture;
 
 public class ReferFuture extends AbstractFuture<Integer> {
 	
-	public void setResult(Integer responseCode){
+ 	public void setResult(Integer responseCode){
 			this.set(responseCode);
 	}
 

@@ -1,5 +1,7 @@
 package com.googlecode.test.phone.rtp.pcap;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,7 +16,14 @@ public class PCAPPackageParser {
 
  
 	public PCAPPackageParser(String filename) {
- 		this.inputStream = this.getClass().getClassLoader().getResourceAsStream(filename);
+ 		//this.inputStream = this.getClass().getClassLoader().getResourceAsStream(filename);
+ 		try {
+			this.inputStream = new FileInputStream("D:/319.pcap");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
  	}
 
 	public void close() {
@@ -32,7 +41,9 @@ public class PCAPPackageParser {
 		PackageHeader header = parseHeader();
 		if (header == null)
 			return null;
-		PackageData data = parseData(header.getCapLen());
+		long capLen = header.getCapLen();
+		System.err.println(capLen);
+		PackageData data = parseData(capLen);
 
 		if (data == null)
 			return null;

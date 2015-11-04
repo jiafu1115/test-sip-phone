@@ -22,14 +22,14 @@ public class PackageData {
 	private void parse(byte[] raw_data) {
 		this.ethernet2 = new Ethernet2(raw_data, 0);
  
-		if (ethernet2.getMacDataType() == Ethernet2.IPv4) {
+		if (ethernet2.getMacDataType() == Ethernet2.PayloadType.IPV4) {
 			IP ipv4 = new IP(raw_data, ethernet2.getDataStart());
 			this.ip = ipv4;
-			if (ipv4.getDataType() == IP.UDP) {
+			if (ipv4.getDataType() == IP.PayloadType.UDP) {
 				UDP udp = new UDP(raw_data, ipv4.getStart()
 						+ ipv4.getHeaderLength());
 				this.udp = udp;
-			} else if (ipv4.getDataType() == IP.TCP) {
+			} else if (ipv4.getDataType() == IP.PayloadType.TCP) {
 				TCP tcp = new TCP(raw_data, ipv4.getStart()
 						+ ipv4.getHeaderLength(), ipv4.getTotalLength()
 						- ipv4.getHeaderLength());

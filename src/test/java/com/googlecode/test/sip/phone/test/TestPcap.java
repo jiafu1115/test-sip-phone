@@ -9,14 +9,17 @@ public class TestPcap {
 		PCAPPackageParser parser = new PCAPPackageParser("SIP_CALL_RTP_G711.cap");
 		
 		Package nextPackage = parser.getNextPackage();
-		
-		System.out.println(nextPackage.getPackageHeader());
-		System.out.println(nextPackage.getPackageData());
+ 		System.out.println(nextPackage);
+ 		nextPackage = parser.getNextPackage();
+ 		System.out.println(nextPackage);
+ 		nextPackage = parser.getNextPackage();
+ 		System.out.println(nextPackage);
+ //Package [packageHeader=PackageHeader [highTime=1105725482000, lowTime=973, capLen=503, len=503], packageData=PackageData [ethernet2=Ethernet2 [macSource=null, macDest=null, macDataType=2048], ip=com.googlecode.test.phone.rtp.pcap.protocol.IP@c39a20, tcp=null, udp=com.googlecode.test.phone.rtp.pcap.protocol.UDP@1bbd23f]]
 
 		
-		while((nextPackage = parser.getNextPackage())!=null){
+	/*	while((nextPackage = parser.getNextPackage())!=null){
 			System.out.println(nextPackage.getPackageData());
-		}
+		}*/
 	/*	
 		Magic：4B：0x1A 2B 3C 4D:用来标示文件的开始
 		Major：2B，0×02 00:当前文件主要的版本号

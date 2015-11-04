@@ -20,5 +20,13 @@ public class Package {
 	public PackageData getPackageData() {
 		return packageData;
 	}
+
+	@Override
+	public String toString() {
+		return "Package [packageHeader=" + packageHeader + ", packageData="
+				+ packageData + "]";
+	}
+	
+	
 	 
 }

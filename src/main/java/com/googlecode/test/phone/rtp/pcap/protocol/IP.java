@@ -1,14 +1,17 @@
 package com.googlecode.test.phone.rtp.pcap.protocol;
 
+import java.util.Arrays;
+
 import com.googlecode.test.phone.rtp.pcap.ByteUtil;
 
 
 
 
 public class IP {
-	public static final int TCP = 0;
-	public static final int UDP = 1;
-	public static final int UNKNOWN = 2;
+	 
+	public static enum PayloadType{
+		TCP,UDP,UNKNOWN;
+	}
 	
 	private byte[] identification = null;
 	private int start = 0;
@@ -26,11 +29,20 @@ public class IP {
 	private int totalLength = -1;
 	private byte[] IPData = null;
 	//TCP or UDP
-	private int dataType = -1;
+	private PayloadType dataType;
 	public IP(byte[] raw_data, int start)
 	{
 		this.raw_data = raw_data;
 		this.start = start;
+		
+		byte b = this.raw_data[start + 9];
+		int type = (int)b;
+		if(type == 0x06)
+			this.dataType = PayloadType.TCP;
+		else if(type == 0x11)
+			this.dataType = PayloadType.UDP;
+		else
+			this.dataType = PayloadType.UNKNOWN;
 	}
 	
 	public boolean isMoreFragment()
@@ -83,20 +95,9 @@ public class IP {
 		return this.timeToLive;
 	}
 	
-	public int getDataType()
+	public PayloadType getDataType()
 	{
-		if(dataType == -1)
-		{
-			byte b = this.raw_data[start + 9];
-			int type = (int)b;
-			if(type == 0x06)
-				this.dataType = TCP;
-			else if(type == 0x11)
-				this.dataType = UDP;
-			else
-				this.dataType = UNKNOWN;
-		}
-		return dataType;
+ 		return dataType;
 	}
 	
 	public String getSrcAddr()
@@ -180,12 +181,7 @@ public class IP {
 
 		this.destAddr = str.toString();
 	}
-	
-
-	private int oneByte2Int(byte b)
-	{
-		return b & 0xFF;
-	}
+	 
 	
 	public byte[] getDestAddrBytes()
 	{
@@ -281,4 +277,15 @@ public class IP {
 		}
 		return IPData;
 	}
+
+	@Override
+	public String toString() {
+		return "IP [srcAddr=" + srcAddr + ", srcAddrBytes="
+				+ Arrays.toString(srcAddrBytes) + ", destAddr=" + destAddr
+				+ ", destAddrBytes=" + Arrays.toString(destAddrBytes)
+				+ ", totalLength=" + totalLength + ", dataType=" + dataType
+				+ "]";
+	}
+	
+	
 }
