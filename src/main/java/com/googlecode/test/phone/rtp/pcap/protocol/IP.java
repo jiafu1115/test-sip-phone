@@ -1,7 +1,5 @@
 package com.googlecode.test.phone.rtp.pcap.protocol;
 
-import java.util.Arrays;
-
 import com.googlecode.test.phone.rtp.pcap.ByteUtil;
 
 
