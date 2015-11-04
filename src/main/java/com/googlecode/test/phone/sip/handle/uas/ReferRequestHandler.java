@@ -10,8 +10,6 @@ import javax.sip.RequestEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.SipException;
 import javax.sip.SipProvider;
-import javax.sip.TransactionAlreadyExistsException;
-import javax.sip.TransactionUnavailableException;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
@@ -75,8 +73,6 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 	private EventHeader eventHeader;
 	private Dialog dialog;
 	
-	
-
 	public ReferRequestHandler(AbstractSipPhone sipPhone) {
 		super(sipPhone);
  	}
@@ -92,110 +88,111 @@ public class ReferRequestHandler extends AbstractRequestHandler {
  		 
     }
 
-	private void refer(RequestEvent requestEvent) throws ParseException, SipException,
-			TransactionAlreadyExistsException, TransactionUnavailableException, InvalidArgumentException {
-		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-        Request refer = requestEvent.getRequest();
-
-            LOG.info("referee: got an REFER sending Accepted");
-            LOG.info("referee:  " + refer.getMethod() );
-            LOG.info("referee : dialog = " + requestEvent.getDialog());
+	private void refer(RequestEvent requestEvent) throws Exception {
+			SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+			Request referRequest = requestEvent.getRequest();
+        	
+			this.dialog=requestEvent.getDialog();
+            LOG.info("referee : dialog = " + dialog);
 
             // Check that it has a Refer-To, if not bad request
-            ReferToHeader refTo = (ReferToHeader) refer.getHeader( ReferToHeader.NAME );
+            ReferToHeader refTo = (ReferToHeader) referRequest.getHeader( ReferToHeader.NAME );
             if (refTo==null) {
-                Response bad;
- 					bad = SipConstants.Factorys.MESSAGE_FACTORY.createResponse(Response.BAD_REQUEST, refer);
-		            bad.setReasonPhrase( "Missing Refer-To" );
-		            sipProvider.sendResponse( bad );
-				  
-                return;
+                Response bad = SipConstants.Factorys.MESSAGE_FACTORY.createResponse(Response.BAD_REQUEST, referRequest);
+		        bad.setReasonPhrase( "Missing Refer-To" );
+		        sipProvider.sendResponse(bad );
+                 
+		        return;
             }
 
-            
-            // Always create a ServerTransaction, best as early as possible in the code
-            Response response = null;
-            ServerTransaction st = requestEvent.getServerTransaction();
-            if (st == null) {
-                st = sipProvider.getNewServerTransaction(refer);
-            }
-
-            // Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
-//            String toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );
-            response = SipConstants.Factorys.MESSAGE_FACTORY.createResponse(202, refer);
-//            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-            
-            dialog = st.getDialog();
-
-            // Sanity check: to header should not have a tag. Else the dialog
-         /*   // should have matched
-            if (toHeader.getTag()!=null) {
-                 System.err.println( "####ERROR: To-tag!=null but no dialog match! My dialog=" + dialog.getState() );
-            }*/
-         //   toHeader.setTag(toTag); // Application is supposed to set.
-
-            // REFER dialogs do not terminate on bye.
-            //dialog.terminateOnBye(false);
-            if (dialog != null) {
-            	if(LOG.isDebugEnabled())
-            		LOG.debug("Dialog " + dialog+ " Dialog state " + dialog.getState()+" local tag=" + dialog.getLocalTag() +" remote tag=" + dialog.getRemoteTag()); 
-            }
-             
-            // Both 2xx response to SUBSCRIBE and NOTIFY need a Contact
-            ContactHeader contactHeader = SipConstants.Factorys.HEADER_FACTORY.createContactHeader(SipConstants.Factorys.ADDRESS_FACTORY.createAddress(this.sipPhone.getLocalSipUri()));
-            response.addHeader(contactHeader);
-
-            // Expires header is mandatory in 2xx responses to REFER
-            ExpiresHeader expires = (ExpiresHeader) refer.getHeader( ExpiresHeader.NAME );
-            if (expires==null) {
-                expires = SipConstants.Factorys.HEADER_FACTORY.createExpiresHeader(30);// rather short
-            }
-            response.addHeader( expires );
-
-            LOG.info(response);
-            st.sendResponse(response);
-
-            // NOTIFY MUST have "refer" event, possibly with id
-            eventHeader = SipConstants.Factorys.HEADER_FACTORY.createEventHeader("refer");
-
-            // Not necessary, but allowed: id == cseq of REFER
-            long id = ((CSeqHeader) refer.getHeader("CSeq")).getSeqNumber();
-            eventHeader.setEventId( Long.toString(id) );
+ 			send202ForRequest(requestEvent, sipProvider);
+ 
+            setEventHeader(referRequest);
             
             this.sipPhone.stopRtpSession(dialog.getDialogId());
 
-            sendNotify( Response.TRYING, "Trying" );
+            sendNotify(Response.TRYING, "Trying" );
             
             final ReferFuture referFuture = new ReferFuture();
-			this.sipPhone.setReferFuture(referFuture);
- 			
-		    CallIdHeader callIdHeader=(CallIdHeader)refer.getHeader(CallIdHeader.NAME);
-             
-            this.sipPhone.invite(refTo.getAddress().getURI().toString(), callIdHeader.getCallId()+"_refer");
+			this.sipPhone.setReferFuture(referFuture); 		
+			
+		    this.sipPhone.invite(refTo.getAddress().getURI().toString(), getNewCallId(referRequest));
  		    
-		    new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					  Integer integer;
-						try {
-							integer = referFuture.get(5, TimeUnit.SECONDS);
-				            sendNotify(integer, "" );
-			 			} catch (Exception e) {
-			 				LOG.error(e.getMessage(),e);
-				            try {
-								sendNotify(503, e.getMessage());
-							} catch (Exception e1) {
- 								e1.printStackTrace();
-							}  
-						} finally{
-							sipPhone.setReferFuture(null);
-			 			}
-			    					
-				}
-			}).start();
+		    sendNotifyAccordingToReferFuture(referFuture);
 
           
+	}
+
+	private void setEventHeader(Request referRequest) throws ParseException {
+		// NOTIFY MUST have "refer" event, possibly with id
+		this.eventHeader = SipConstants.Factorys.HEADER_FACTORY.createEventHeader("refer");
+
+		// Not necessary, but allowed: id == cseq of REFER
+		long id = ((CSeqHeader) referRequest.getHeader("CSeq")).getSeqNumber();
+		this.eventHeader.setEventId( Long.toString(id) );
+	}
+
+	private String getNewCallId(Request referRequest) {
+		CallIdHeader callIdHeader=(CallIdHeader)referRequest.getHeader(CallIdHeader.NAME);
+		String callId = callIdHeader.getCallId()+"_refer";
+		return callId;
+	}
+
+	private void sendNotifyAccordingToReferFuture(final ReferFuture referFuture) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				  Integer integer;
+					try {
+						integer = referFuture.get(5, TimeUnit.SECONDS);
+			            sendNotify(integer, "");
+		 			} catch (Exception e) {
+		 				LOG.error(e.getMessage(),e);
+			            try {
+							sendNotify(503, e.getMessage());
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}  
+					} finally{
+						sipPhone.setReferFuture(null);
+		 			}
+		    					
+			}
+		}).start();
+	}
+
+	private void send202ForRequest(RequestEvent requestEvent, SipProvider sipProvider) throws Exception{
+ 		Request referRequest = requestEvent.getRequest();
+ 		ServerTransaction serverTransaction = requestEvent.getServerTransaction();
+		if (serverTransaction == null) {
+		    serverTransaction = sipProvider.getNewServerTransaction(referRequest);
+		}
+		
+		LOG.info(serverTransaction.getDialog());
+		
+		Response response = generateAcceptResponse(referRequest);
+		serverTransaction.sendResponse(response);
+ 	}
+
+	private Response generateAcceptResponse(Request refer)
+			throws ParseException, InvalidArgumentException {
+		Response response = SipConstants.Factorys.MESSAGE_FACTORY.createResponse(202, refer);
+		
+ 		ContactHeader contactHeader = SipConstants.Factorys.HEADER_FACTORY.createContactHeader(SipConstants.Factorys.ADDRESS_FACTORY.createAddress(this.sipPhone.getLocalSipUri()));
+		response.addHeader(contactHeader);
+
+		// Expires header is mandatory in 2xx responses to REFER
+		ExpiresHeader expires = (ExpiresHeader) refer.getHeader( ExpiresHeader.NAME );
+		if (expires==null) {
+		    expires = SipConstants.Factorys.HEADER_FACTORY.createExpiresHeader(30);// rather short
+		}
+		response.addHeader( expires );
+
+		LOG.info(response);
+		
+		return response;
+		
 	}
 
         private void sendNotify( int code, String reason )
@@ -232,14 +229,14 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 
             ContactHeader contactHeader = SipConstants.Factorys.HEADER_FACTORY.createContactHeader(SipConstants.Factorys.ADDRESS_FACTORY.createAddress(this.sipPhone.getLocalSipUri()));
             notifyRequest.setHeader(contactHeader);
-            ClientTransaction ct2 = this.sipPhone.getSipProvider().getNewClientTransaction(notifyRequest);
 
-            ContentTypeHeader ct = SipConstants.Factorys.HEADER_FACTORY.createContentTypeHeader("message","sipfrag");
-            ct.setParameter( "version", "2.0" );
+            ContentTypeHeader contentTypeHeader = SipConstants.Factorys.HEADER_FACTORY.createContentTypeHeader("message","sipfrag");
+            contentTypeHeader.setParameter( "version", "2.0" );
 
-            notifyRequest.setContent( "SIP/2.0 " + code + ' ' + reason, ct );
+            notifyRequest.setContent( "SIP/2.0 " + code + ' ' + reason, contentTypeHeader );
  
-            dialog.sendRequest(ct2);
+            ClientTransaction clientTransaction = this.sipPhone.getSipProvider().getNewClientTransaction(notifyRequest);
+            dialog.sendRequest(clientTransaction);
             
             LOG.info(notifyRequest);
             
