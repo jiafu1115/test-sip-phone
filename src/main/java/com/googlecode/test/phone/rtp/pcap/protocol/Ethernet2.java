@@ -1,7 +1,7 @@
 package com.googlecode.test.phone.rtp.pcap.protocol;
 
+import java.util.Arrays;
 
-//pcap���ļ���ʽ
 public class Ethernet2 {
 	public static final int UNKNOWN = 0x0000;
 	public static final int IPv4 = 0x0800;
@@ -75,5 +75,13 @@ public class Ethernet2 {
 		}
 		return this.macDataType;
 	}
+
+	@Override
+	public String toString() {
+		return "Ethernet2 [macSource=" + Arrays.toString(macSource) + ", macDest=" + Arrays.toString(macDest)
+				+ ", macDataType=" + macDataType + "]";
+	}
+	
+	
 	
 }

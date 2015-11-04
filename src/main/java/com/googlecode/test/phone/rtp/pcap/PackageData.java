@@ -53,5 +53,10 @@ public class PackageData {
 	public UDP getUdp() {
 		return udp;
 	}
-  
+
+	@Override
+	public String toString() {
+		return "PackageData [ethernet2=" + ethernet2 + ", ip=" + ip + ", tcp=" + tcp + ", udp=" + udp + "]";
+	}
+	 
 }

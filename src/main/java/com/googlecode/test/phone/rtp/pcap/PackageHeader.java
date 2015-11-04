@@ -40,4 +40,13 @@ public class PackageHeader {
 	{
  		return len;
 	}
+
+
+	@Override
+	public String toString() {
+		return "PackageHeader [highTime=" + highTime + ", lowTime=" + lowTime + ", capLen=" + capLen + ", len=" + len
+				+ "]";
+	}
+	
+	
 }

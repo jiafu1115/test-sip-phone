@@ -12,14 +12,7 @@ public class PCAPPackageParser {
  
  	private InputStream inputStream = null;
 
-	public static void main(String[] args) {
-		PCAPPackageParser parser = new PCAPPackageParser("1.pcap");
-
-		parser.checkPCAPHeader();
-		
- 		parser.close();
-	}
-
+ 
 	public PCAPPackageParser(String filename) {
  		this.inputStream = this.getClass().getClassLoader().getResourceAsStream(filename);
  	}
