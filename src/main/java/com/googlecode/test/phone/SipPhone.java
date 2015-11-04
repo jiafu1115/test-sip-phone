@@ -1,5 +1,7 @@
 package com.googlecode.test.phone;
 
+import javax.sip.address.SipURI;
+
 import com.googlecode.test.phone.AbstractSipPhone.ReceivedCallHandleType;
 import com.googlecode.test.phone.sip.ReceivedMessages;
 
@@ -26,5 +28,7 @@ public interface SipPhone {
  	ReceivedCallHandleType getReceivedCallHandleType();
 
 	void setReceivedCallHandleType(ReceivedCallHandleType receivedCallHandleType);
+	
+	SipURI getLocalSipUri();
 
 }

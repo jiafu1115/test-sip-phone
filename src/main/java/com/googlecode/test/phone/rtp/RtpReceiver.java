@@ -37,7 +37,7 @@ public class RtpReceiver extends SimpleChannelUpstreamHandler{
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
             throws Exception {
-        super.exceptionCaught(ctx, e);
+        //ignore it
     }
     
 }

@@ -1,6 +1,7 @@
 package com.googlecode.test.phone.sip.handle.uas;
 
 import java.text.ParseException;
+import java.util.concurrent.TimeUnit;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -12,13 +13,13 @@ import javax.sip.SipProvider;
 import javax.sip.TransactionAlreadyExistsException;
 import javax.sip.TransactionUnavailableException;
 import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
 import javax.sip.header.ContentTypeHeader;
 import javax.sip.header.EventHeader;
 import javax.sip.header.ExpiresHeader;
 import javax.sip.header.ReferToHeader;
 import javax.sip.header.SubscriptionStateHeader;
-import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
@@ -26,6 +27,7 @@ import javax.sip.message.Response;
 import org.apache.log4j.Logger;
 
 import com.googlecode.test.phone.AbstractSipPhone;
+import com.googlecode.test.phone.ReferFuture;
 import com.googlecode.test.phone.sip.SipConstants;
 
  
@@ -72,6 +74,8 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 
 	private EventHeader eventHeader;
 	private Dialog dialog;
+	
+	
 
 	public ReferRequestHandler(AbstractSipPhone sipPhone) {
 		super(sipPhone);
@@ -83,7 +87,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 		if(supportRefer){
 	        refer(requestEvent);
  		}else{
- 			this.sipPhone.stopRtpSession();
+ 			this.sipPhone.stopRtpSession(requestEvent.getDialog().getDialogId());
  		}
  		 
     }
@@ -101,8 +105,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             ReferToHeader refTo = (ReferToHeader) refer.getHeader( ReferToHeader.NAME );
             if (refTo==null) {
                 Response bad;
-		 
-					bad = SipConstants.Factorys.MESSAGE_FACTORY.createResponse(Response.BAD_REQUEST, refer);
+ 					bad = SipConstants.Factorys.MESSAGE_FACTORY.createResponse(Response.BAD_REQUEST, refer);
 		            bad.setReasonPhrase( "Missing Refer-To" );
 		            sipProvider.sendResponse( bad );
 				  
@@ -118,18 +121,18 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             }
 
             // Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
-            String toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );
+//            String toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );
             response = SipConstants.Factorys.MESSAGE_FACTORY.createResponse(202, refer);
-            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+//            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             
             dialog = st.getDialog();
 
             // Sanity check: to header should not have a tag. Else the dialog
-            // should have matched
+         /*   // should have matched
             if (toHeader.getTag()!=null) {
-                System.err.println( "####ERROR: To-tag!=null but no dialog match! My dialog=" + dialog.getState() );
-            }
-            toHeader.setTag(toTag); // Application is supposed to set.
+                 System.err.println( "####ERROR: To-tag!=null but no dialog match! My dialog=" + dialog.getState() );
+            }*/
+         //   toHeader.setTag(toTag); // Application is supposed to set.
 
             // REFER dialogs do not terminate on bye.
             dialog.terminateOnBye(false);
@@ -154,6 +157,8 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             /*
              * JvB: The REFER MUST be answered first.
              */
+            
+            LOG.info(response);
             st.sendResponse(response);
 
             // NOTIFY MUST have "refer" event, possibly with id
@@ -162,14 +167,41 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             // Not necessary, but allowed: id == cseq of REFER
             long id = ((CSeqHeader) refer.getHeader("CSeq")).getSeqNumber();
             eventHeader.setEventId( Long.toString(id) );
+            
+            this.sipPhone.stopRtpSession(dialog.getDialogId());
 
             sendNotify( Response.TRYING, "Trying" );
             
-            
-                                  
-  
-            // Then call the refer-to
-           // sendInvite( refTo );
+            final ReferFuture referFuture = new ReferFuture();
+			this.sipPhone.setReferFuture(referFuture);
+ 			
+		    CallIdHeader callIdHeader=(CallIdHeader)refer.getHeader(CallIdHeader.NAME);
+             
+            this.sipPhone.invite(refTo.getAddress().getURI().toString(), callIdHeader.getCallId()+"_refer");
+ 		    
+		    new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					  Integer integer;
+						try {
+							integer = referFuture.get(5, TimeUnit.SECONDS);
+				            sendNotify(integer, "" );
+			 			} catch (Exception e) {
+			 				LOG.error(e.getMessage(),e);
+				            try {
+								sendNotify(503, e.getMessage());
+							} catch (Exception e1) {
+ 								e1.printStackTrace();
+							}  
+						} finally{
+							sipPhone.setReferFuture(null);
+			 			}
+			    					
+				}
+			}).start();
+
+          
 	}
 
         private void sendNotify( int code, String reason )
@@ -212,10 +244,10 @@ public class ReferRequestHandler extends AbstractRequestHandler {
             ct.setParameter( "version", "2.0" );
 
             notifyRequest.setContent( "SIP/2.0 " + code + ' ' + reason, ct );
-
-            // Let the other side know that the tx is pending acceptance
-            //
+ 
             dialog.sendRequest(ct2);
+            
+            LOG.info(notifyRequest);
             LOG.info("NOTIFY Branch ID " +
                 ((ViaHeader)notifyRequest.getHeader(ViaHeader.NAME)).getParameter("branch"));
             LOG.info("Dialog " + dialog);

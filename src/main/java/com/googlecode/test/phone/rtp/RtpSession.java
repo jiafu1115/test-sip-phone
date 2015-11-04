@@ -62,9 +62,9 @@ public class RtpSession {
 	
 	 
 	public void stop() {
- 		LOGGER.info("[RTP][CLOSE]"+rtpChannel);
  		if (rtpChannel != null) {
-			rtpChannel.stop();
+ 	 		LOGGER.info("[RTP][CLOSE]"+rtpChannel);
+ 			rtpChannel.stop();
  			rtpChannel = null;
 		}
  	} 
