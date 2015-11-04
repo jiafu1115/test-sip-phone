@@ -135,7 +135,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
          //   toHeader.setTag(toTag); // Application is supposed to set.
 
             // REFER dialogs do not terminate on bye.
-            dialog.terminateOnBye(false);
+            //dialog.terminateOnBye(false);
             if (dialog != null) {
             	if(LOG.isDebugEnabled())
             		LOG.debug("Dialog " + dialog+ " Dialog state " + dialog.getState()+" local tag=" + dialog.getLocalTag() +" remote tag=" + dialog.getRemoteTag()); 
