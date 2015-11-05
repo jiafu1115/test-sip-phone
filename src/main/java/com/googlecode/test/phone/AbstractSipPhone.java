@@ -72,7 +72,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 	
 	protected SipListenerImpl sipListenerImpl;
  	
-  	protected ReferFuture referFuture;
+  	protected ReferResultFuture referFuture;
   
    	{
    		localIp=NetUtil.getLocalIp();
@@ -338,11 +338,11 @@ public abstract class AbstractSipPhone implements SipPhone {
 	}
 
  
-	public ReferFuture getReferFuture() {
+	public ReferResultFuture getReferFuture() {
 		return referFuture;
 	}
 
- 	public void setReferFuture(ReferFuture referFuture) {
+ 	public void setReferFuture(ReferResultFuture referFuture) {
 		this.referFuture = referFuture;
 	}
  

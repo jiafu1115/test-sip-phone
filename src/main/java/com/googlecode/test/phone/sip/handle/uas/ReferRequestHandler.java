@@ -25,7 +25,8 @@ import javax.sip.message.Response;
 import org.apache.log4j.Logger;
 
 import com.googlecode.test.phone.AbstractSipPhone;
-import com.googlecode.test.phone.ReferFuture;
+import com.googlecode.test.phone.ReferResult;
+import com.googlecode.test.phone.ReferResultFuture;
 import com.googlecode.test.phone.sip.SipConstants;
 
  
@@ -113,7 +114,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 
             sendNotify(Response.TRYING, "Trying" );
             
-            final ReferFuture referFuture = new ReferFuture();
+            final ReferResultFuture referFuture = new ReferResultFuture();
 			this.sipPhone.setReferFuture(referFuture); 		
 			
 		    this.sipPhone.invite(refTo.getAddress().getURI().toString(), getNewCallId(referRequest));
@@ -138,15 +139,14 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 		return callId;
 	}
 
-	private void sendNotifyAccordingToReferFuture(final ReferFuture referFuture) {
+	private void sendNotifyAccordingToReferFuture(final ReferResultFuture referFuture) {
 		new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
-				  Integer integer;
-					try {
-						integer = referFuture.get(5, TimeUnit.SECONDS);
-			            sendNotify(integer, "OK");
+ 					try {
+						ReferResult referResult = referFuture.get(5, TimeUnit.SECONDS);
+ 			            sendNotify(referResult.getStatusCode(),referResult.getReason());
 		 			} catch (Exception e) {
 		 				LOG.error(e.getMessage(),e);
 			            try {
@@ -169,9 +169,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 		    serverTransaction = sipProvider.getNewServerTransaction(referRequest);
 		}
 		
-		LOG.info(serverTransaction.getDialog());
-		
-		Response response = generateAcceptResponse(referRequest);
+ 		Response response = generateAcceptResponse(referRequest);
 		serverTransaction.sendResponse(response);
  	}
 

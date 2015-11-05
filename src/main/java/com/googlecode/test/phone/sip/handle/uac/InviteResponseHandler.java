@@ -21,7 +21,8 @@ import javax.sip.message.Response;
 import org.apache.log4j.Logger;
 
 import com.googlecode.test.phone.AbstractSipPhone;
-import com.googlecode.test.phone.ReferFuture;
+import com.googlecode.test.phone.ReferResult;
+import com.googlecode.test.phone.ReferResultFuture;
 import com.googlecode.test.phone.rtp.codec.AudioCodec;
 import com.googlecode.test.phone.sip.SipConstants;
 import com.googlecode.test.phone.sip.sdp.SdpInfo;
@@ -81,10 +82,10 @@ public class InviteResponseHandler extends AbstractResponseHandler {
  
 			if (arg0.getResponse().getStatusCode() == SIPResponse.OK) {
 				
-				ReferFuture referFuture = this.sipPhone.getReferFuture();
+				ReferResultFuture referFuture = this.sipPhone.getReferFuture();
  				
  				if(referFuture!=null){
-					referFuture.setResult(SIPResponse.OK);
+					referFuture.setResult(new ReferResult(SIPResponse.OK,"OK"));
 				}
 				
 				Request request = dialog.createAck(1);
@@ -111,10 +112,10 @@ public class InviteResponseHandler extends AbstractResponseHandler {
 				this.sipPhone.getRtpSession().start();
 			}else if(arg0.getResponse().getStatusCode()>=400){
 				
- 				ReferFuture referFuture = this.sipPhone.getReferFuture();
+ 				ReferResultFuture referFuture = this.sipPhone.getReferFuture();
 				if(referFuture!=null){
-					referFuture.setResult(arg0.getResponse().getStatusCode());
-				}
+ 					referFuture.setResult(new ReferResult(arg0.getResponse().getStatusCode(),arg0.getResponse().getReasonPhrase()));
+ 				}
  			}
 		} catch (Exception e) {
 			LOG.error(e.getMessage(),e);
