@@ -265,6 +265,7 @@ public abstract class AbstractSipPhone implements SipPhone {
  		List<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
 		ViaHeader viaHeader = SipConstants.Factorys.HEADER_FACTORY.createViaHeader(localIp,
 				localSipPort, ListeningPoint.UDP, Utils.getInstance().generateBranchId());
+		viaHeader.setRPort();
 		viaHeaders.add(viaHeader);
 		
  		ContactHeader createContactHeader = SipConstants.Factorys.HEADER_FACTORY.createContactHeader(localSipAddress);
