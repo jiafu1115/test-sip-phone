@@ -146,7 +146,7 @@ public class ReferRequestHandler extends AbstractRequestHandler {
 				  Integer integer;
 					try {
 						integer = referFuture.get(5, TimeUnit.SECONDS);
-			            sendNotify(integer, "");
+			            sendNotify(integer, "OK");
 		 			} catch (Exception e) {
 		 				LOG.error(e.getMessage(),e);
 			            try {
