@@ -1,7 +1,5 @@
 package com.googlecode.test.phone.rtp.pcap;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,15 +17,8 @@ public class PCAPParser {
 
  
 	public PCAPParser(String filename) {
- 		//this.inputStream = this.getClass().getClassLoader().getResourceAsStream(filename);
- 		try {
-			this.inputStream = new FileInputStream("D:/319.pcap");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
- 	}
+  	 	this.inputStream = this.getClass().getClassLoader().getResourceAsStream(filename);
+  	}
 
 	public void close() {
 		try {

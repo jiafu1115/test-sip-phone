@@ -7,7 +7,7 @@ import com.googlecode.test.phone.rtp.pcap.protocol.IP.PayloadType;
 public class TestPcap {
 	
 	public static void main(String[] args) {
-		PCAPParser parser = new PCAPParser("SIP_CALL_RTP_G711.cap");
+		PCAPParser parser = new PCAPParser("G711.cap");
 		
 		PCAPPackage nextPackage = parser.getNextPackage();
  		System.out.println(nextPackage);
