@@ -19,7 +19,8 @@ public class TestPcap {
 		  nextRtpPackage = parser.getNextRtpPackage();
 
 			System.out.println(nextRtpPackage);
- 
+			nextRtpPackage = parser.getNextRtpPackage();
+			System.out.println(nextRtpPackage);
 		
 	/*	PCAPPackage nextPackage = parser.getNextPackage();
  		System.out.println(nextPackage);
