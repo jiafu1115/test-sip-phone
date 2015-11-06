@@ -13,6 +13,8 @@ import com.googlecode.test.phone.rtp.dtmf.DtmfFactory;
 import com.googlecode.test.phone.rtp.listeners.CollectDtmfRtpListener;
 import com.googlecode.test.phone.rtp.listeners.PlayRtpListener;
 import com.googlecode.test.phone.rtp.listeners.RtpListener;
+import com.googlecode.test.phone.rtp.pcap.PCAPPackage;
+import com.googlecode.test.phone.rtp.pcap.PCAPParser;
 
 public class RtpSession {
 
@@ -75,6 +77,24 @@ public class RtpSession {
 	
 	public void sendDtmf(String digits) {
 		 sendDtmf(digits,0);
+	}
+	
+	public void playPcapfile(String fileName){
+	 	LOGGER.info("[RTP][PLAY][filename]"+fileName);
+   		List<RtpPacket> rtpPackets=new ArrayList<RtpPacket>();
+ 		PCAPParser pcapParser = new PCAPParser(fileName);
+		try{
+ 	  		PCAPPackage nextRtpPackage=null;
+			while((nextRtpPackage = pcapParser.getNextRtpPackage())!=null){
+				RtpPacket rtpPacket = RtpParserUtil.decode(nextRtpPackage.getPackageData().getUdp().getUDPData());
+				rtpPackets.add(rtpPacket);
+			}
+		}finally{
+			pcapParser.close();
+		}
+		
+	 	LOGGER.info("[RTP][PLAY][packet number]"+rtpPackets.size());
+  		this.rtpChannel.writeAuidoFilePackets(rtpPackets);
 	}
  
 	public void sendDtmf(String digits, int sleepTimeByMilliSecond) {
