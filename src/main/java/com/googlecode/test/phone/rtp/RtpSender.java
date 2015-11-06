@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +18,8 @@ public class RtpSender {
 	private RtpChannel rtpSession;
 	private List<RtpPacket> dtmfPackets = Collections
 			.synchronizedList(new ArrayList<RtpPacket>());
-	private List<RtpPacket> audioFilePackets = Collections
-			.synchronizedList(new ArrayList<RtpPacket>());
-	
+	private ArrayBlockingQueue<RtpPacket> audioFilePackets = new ArrayBlockingQueue<RtpPacket>(1);
+ 	
 	private int ssrc=new Random().nextInt();
 	private int sequenceNumber;
 	private int timestamp;
@@ -52,14 +52,14 @@ public class RtpSender {
 		if (dtmfPackets.size() > 0) {
 			return generateDtmfPackt(rtpPacket);
 		}
-
-		if (audioFilePackets.size() > 0) {
-			return generateAudioFilePacket(rtpPacket);
-		}
-
+ 
+		RtpPacket poll = audioFilePackets.poll();
+		if(poll!=null){
+			return generateAudioFilePacket(rtpPacket,poll);
+ 		}
+ 
 		return generateComfortableNoiseRtp(rtpPacket);
-
-	}
+ 	}
 	
 	private RtpPacket generateBaseRtpPacket() {
 		RtpPacket rtpPacket = new RtpPacket();
@@ -84,12 +84,10 @@ public class RtpSender {
 		return rtpPacket;
 	}
 
-	private RtpPacket generateAudioFilePacket(RtpPacket rtpPacket) {
-		RtpPacket pushedPacket = audioFilePackets.remove(0);
-		rtpPacket.setPayloadType(pushedPacket.getPayloadType());
-		rtpPacket.setData(pushedPacket.getData());
-
-		return rtpPacket;
+	private RtpPacket generateAudioFilePacket(RtpPacket rtpPacket,RtpPacket rtpPacketInAudioFile) {
+		//TODO check if payload is same with sdp
+ 		rtpPacket.setData(rtpPacketInAudioFile.getData());
+ 		return rtpPacket;
 	}
 
 	private RtpPacket generateDtmfPackt(RtpPacket rtpPacket) {
@@ -121,8 +119,12 @@ public class RtpSender {
 		this.dtmfPackets.addAll(rtpPackets);
 	}
 
-	public void sendAuidoFilePackets(List<RtpPacket> rtpPackets) {
-		this.audioFilePackets.addAll(rtpPackets);
+	public void sendAuidoFilePackets(RtpPacket rtpPacket) {
+		try {
+			this.audioFilePackets.put(rtpPacket);
+		} catch (InterruptedException e) {
+ 			e.printStackTrace();
+		}
 	}
 
 }
