@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import com.googlecode.test.phone.rtp.pcap.PCAPPackage.PackageData;
 import com.googlecode.test.phone.rtp.pcap.PCAPPackage.PackageHeader;
+import com.googlecode.test.phone.rtp.pcap.protocol.UDP;
 
 public class PCAPParser {
 	
@@ -18,7 +19,7 @@ public class PCAPParser {
  
 	public PCAPParser(String filename) {
   	 	this.inputStream = this.getClass().getClassLoader().getResourceAsStream(filename);
-  	}
+   	}
 
 	public void close() {
 		try {
@@ -44,6 +45,29 @@ public class PCAPParser {
 		
   		return pack;
 	}
+	
+	public PCAPPackage getNextRtpPackage() {
+		PCAPPackage  pcapPackage;
+		while( (pcapPackage=getNextPackage())!=null){
+			UDP udp = pcapPackage.getPackageData().getUdp();
+			if(udp!=null){
+				byte[] udpData = udp.getUDPData();
+				int b = (int)(udpData[0] & 0xff);
+				b= ((b & 0xc0) >> 6);
+				if(b==2){
+					return pcapPackage;
+				}else{
+					getNextRtpPackage();
+				}
+			}else{
+				return getNextRtpPackage();
+			}
+		 }
+		
+		return null;
+	}
+	
+  
 
  	public PackageData parseData(long len) {
 		int r = 0;

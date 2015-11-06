@@ -1,5 +1,7 @@
 package com.googlecode.test.sip.phone.test;
 
+import com.googlecode.test.phone.rtp.RtpPacket;
+import com.googlecode.test.phone.rtp.RtpParserUtil;
 import com.googlecode.test.phone.rtp.pcap.PCAPParser;
 import com.googlecode.test.phone.rtp.pcap.PCAPPackage;
 import com.googlecode.test.phone.rtp.pcap.protocol.IP.PayloadType;
@@ -7,9 +9,19 @@ import com.googlecode.test.phone.rtp.pcap.protocol.IP.PayloadType;
 public class TestPcap {
 	
 	public static void main(String[] args) {
-		PCAPParser parser = new PCAPParser("G711.cap");
+		PCAPParser parser = new PCAPParser("G711.pcap");
 		
-		PCAPPackage nextPackage = parser.getNextPackage();
+		PCAPPackage nextRtpPackage = parser.getNextRtpPackage();
+		System.out.println(nextRtpPackage);
+		
+		RtpPacket decode = RtpParserUtil.decode(nextRtpPackage.getPackageData().getUdp().getUDPData());
+		System.err.println(decode);
+		  nextRtpPackage = parser.getNextRtpPackage();
+
+			System.out.println(nextRtpPackage);
+ 
+		
+	/*	PCAPPackage nextPackage = parser.getNextPackage();
  		System.out.println(nextPackage);
  		nextPackage = parser.getNextPackage();
  		System.out.println(nextPackage);
@@ -21,7 +33,7 @@ public class TestPcap {
 	 		if(nextPackage.getPackageData().getUdp()!=null)
 			System.out.println(nextPackage);
 			i++;
-		} 
+		} */
 		 
   
   		parser.close();

@@ -1,5 +1,7 @@
 package com.googlecode.test.phone.rtp;
 
+import java.util.Arrays;
+
 public class RtpPacket {
 
     private int version;
@@ -101,5 +103,17 @@ public class RtpPacket {
     public void setData(byte[] data) {
         this.data = data;
     }
+
+	@Override
+	public String toString() {
+		return "RtpPacket [version=" + version + ", padding=" + padding
+				+ ", extension=" + extension + ", csrcCount=" + csrcCount
+				+ ", marker=" + marker + ", payloadType=" + payloadType
+				+ ", sequenceNumber=" + sequenceNumber + ", timestamp="
+				+ timestamp + ", ssrc=" + ssrc + ", csrcList="
+				+ Arrays.toString(csrcList) + "]";
+	}
+    
+    
 
 }
