@@ -204,6 +204,13 @@ public abstract class AbstractSipPhone implements SipPhone {
 		rtpSession.sendDtmf(digits,sleepTimeByMilliSecond);
  	}
  	
+ 	@Override
+	public void sendAudioPcapfile(String pcapfileName){
+ 		if(rtpSession==null)
+			throw new RuntimeException("sip negotition not setup or rtp session closed");
+		rtpSession.sendAudioPcapfile(pcapfileName);	
+	}
+ 	
  
 	@Override
 	public void invite(String requestUrl,String callId) {

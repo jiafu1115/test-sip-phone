@@ -31,4 +31,6 @@ public interface SipPhone {
 	
 	SipURI getLocalSipUri();
 
+	void sendAudioPcapfile(String pcapfileName);
+
 }

@@ -79,7 +79,7 @@ public class RtpSession {
 		 sendDtmf(digits,0);
 	}
 	
-	public void playPcapfile(String fileName){
+	public void sendAudioPcapfile(String fileName){
 	 	LOGGER.info("[RTP][PLAY][filename]"+fileName);
    		List<RtpPacket> rtpPackets=new ArrayList<RtpPacket>();
  		PCAPParser pcapParser = new PCAPParser(fileName);
