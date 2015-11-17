@@ -48,15 +48,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-<<<<<<< HEAD
-				
-  					<source>1.7</source>
-					<target>1.7</target>
-=======
-   					<source>1.5</source>
-					<target>1.5</target>
->>>>>>> branch 'master' of https://github.com/jiafu1115/test-sip-phone.git
-  					<encoding>UTF-8</encoding>
+   					<source>1.8</source>
+					<target>1.8</target>
+   					<encoding>UTF-8</encoding>
   				</configuration>
 			</plugin>
  			<plugin>
