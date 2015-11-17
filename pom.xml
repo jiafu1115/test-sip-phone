@@ -38,10 +38,9 @@
 			<version>1.2.158</version>
 			<scope>compile</scope>
 		</dependency>
-
 	</dependencies>
 	<build>
-		<plugins>
+ 		<plugins>
  			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
