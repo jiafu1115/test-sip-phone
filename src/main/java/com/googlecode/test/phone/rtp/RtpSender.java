@@ -43,7 +43,7 @@ public class RtpSender {
 				rtpSession.write(newRtpPacket);
 			}
 		}, 0, rtpSession.getPtime(),
-				TimeUnit.MICROSECONDS);
+				TimeUnit.MILLISECONDS);
 	}
 
 	public RtpPacket getNewRtpPacket() {
