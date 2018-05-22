@@ -48,7 +48,12 @@ public abstract class AbstractSipPhone implements SipPhone {
  	public static enum ReceivedCallHandleType{
  		IGNORE,BUSY,ACCEPT;
  	}
-	
+ 	
+ 	public static interface RequestRender{
+ 		
+ 		public void render(Request request);
+ 	}
+
 	private static final Logger LOG=Logger.getLogger(AbstractSipPhone.class);
    
 	protected String localIp;
@@ -73,6 +78,7 @@ public abstract class AbstractSipPhone implements SipPhone {
 	protected SipListenerImpl sipListenerImpl;
  	
   	protected ReferResultFuture referFuture;
+  	
   
    	{
    		localIp=NetUtil.getLocalIp();
@@ -214,9 +220,18 @@ public abstract class AbstractSipPhone implements SipPhone {
  
 	@Override
 	public void invite(String requestUrl,String callId) {
+		invite(requestUrl, callId, null);
+ 	}
+ 	
+	@Override
+	public void invite(String requestUrl,String callId, RequestRender requestRender) {
 		try{
-	 		Request request = createInviteRequestWithSipHeader(requestUrl, callId);
-  	 		 
+  	 		Request request = createInviteRequestWithSipHeader(requestUrl, callId);
+  	 		
+  	 		if( requestRender != null ) {
+  	  	 		requestRender.render(request);
+  	 		}
+   	 		 
 	 		if(isEarlyOffer){
 	 	 		SessionDescription sessionDescription = SdpUtil.createSessionDescription(localIp, localRtpPort, supportAudioCodec);
 		     	request.setContent(sessionDescription, SipConstants.Factorys.HEADER_FACTORY.createContentTypeHeader("application", "sdp"));
