@@ -12,6 +12,7 @@ import javax.sip.message.Response;
 import org.apache.log4j.Logger;
 
 import com.googlecode.test.phone.AbstractSipPhone;
+import com.googlecode.test.phone.sip.jain.AlsoHeader;
 
 public class ByeRequestHandler extends AbstractRequestHandler {
 	
@@ -28,7 +29,7 @@ public class ByeRequestHandler extends AbstractRequestHandler {
  		try {
  			ServerTransaction serverTransaction = requestEvent.getServerTransaction();
  			String dialogId = serverTransaction.getDialog().getDialogId();
-  			Header alsoHeader = request.getHeader("Also");
+ 			AlsoHeader alsoHeader = (AlsoHeader)(request.getHeader("Also"));
   			
  			if (serverTransaction != null) {
 					Response response = MESSAGE_FACTORY.createResponse(Response.OK, request);
@@ -39,7 +40,7 @@ public class ByeRequestHandler extends AbstractRequestHandler {
  			if(alsoHeader!=null&&this.sipPhone.isSupportRefer()){
   	 				CallIdHeader callIdHeader=(CallIdHeader)request.getHeader(CallIdHeader.NAME);
  	 				this.sipPhone.stopRtpSession(dialogId);
- 					this.sipPhone.invite(alsoHeader.toString(), callIdHeader.getCallId()+"_also");
+ 					this.sipPhone.invite(alsoHeader.getAddress().getURI().toString(), callIdHeader.getCallId()+"_also");
  				 				
  			}else{
   				sipPhone.stopRtpSession(dialogId);

@@ -1,5 +1,6 @@
 package com.googlecode.test.phone;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,12 +37,16 @@ import com.googlecode.test.phone.sip.ReceivedMessages;
 import com.googlecode.test.phone.sip.SipConstants;
 import com.googlecode.test.phone.sip.SipListenerImpl;
 import com.googlecode.test.phone.sip.SipStackFactory;
+import com.googlecode.test.phone.sip.jain.Also;
+import com.googlecode.test.phone.sip.jain.AlsoParser;
 import com.googlecode.test.phone.sip.sdp.SdpUtil;
 import com.googlecode.test.phone.sip.util.NetUtil;
 import com.googlecode.test.phone.sip.util.PortUtil;
 
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.parser.HeaderParser;
+import gov.nist.javax.sip.parser.ParserFactory;
 
 public abstract class AbstractSipPhone implements SipPhone {
 	
@@ -55,6 +60,17 @@ public abstract class AbstractSipPhone implements SipPhone {
  	}
 
 	private static final Logger LOG=Logger.getLogger(AbstractSipPhone.class);
+	
+ 	static {
+ 		try {
+			Field parserTableField = ParserFactory.class.getDeclaredField("parserTable");
+			parserTableField.setAccessible(true);
+			Map<String,Class<? extends HeaderParser>> parserTable = (Map<String, Class<? extends HeaderParser>>) parserTableField.get(ParserFactory.class);
+			parserTable.put(Also.NAME.toLowerCase(), AlsoParser.class);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
    
 	protected String localIp;
 	protected int localSipPort;
