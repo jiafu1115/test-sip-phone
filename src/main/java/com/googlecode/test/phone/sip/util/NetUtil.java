@@ -11,6 +11,10 @@ public class NetUtil {
 
     public static String getLocalIp() {
         try {
+            String localIP = System.getProperty("localIP");
+            if (localIP != null) {
+                return localIP;
+            }
             return InetAddress.getLocalHost().getHostAddress().toString();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e.getMessage(), e);
