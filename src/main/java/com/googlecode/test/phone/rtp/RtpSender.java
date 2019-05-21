@@ -50,7 +50,7 @@ public class RtpSender {
  		RtpPacket rtpPacket = generateBaseRtpPacket();
 
 		if (dtmfPackets.size() > 0) {
-			return generateDtmfPackt(rtpPacket);
+			return generateDtmfPacket(rtpPacket);
 		}
 
 		if (audioFilePackets.size() > 0) {
@@ -91,7 +91,7 @@ public class RtpSender {
 		return rtpPacket;
 	}
 
-	private RtpPacket generateDtmfPackt(RtpPacket rtpPacket) {
+	private RtpPacket generateDtmfPacket(RtpPacket rtpPacket) {
 		RtpPacket pushedPacket = dtmfPackets.remove(0);
 		rtpPacket.setMarker(pushedPacket.isMarker());
 		rtpPacket.setPayloadType(pushedPacket.getPayloadType());

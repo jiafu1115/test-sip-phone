@@ -5,7 +5,6 @@ import static com.googlecode.test.phone.sip.SipConstants.Factorys.MESSAGE_FACTOR
 import javax.sip.RequestEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.header.CallIdHeader;
-import javax.sip.header.Header;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
